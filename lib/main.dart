@@ -3,6 +3,9 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'arrow_escape.dart';
+import 'color_crew.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const PuzzleMixApp());
@@ -188,6 +191,20 @@ class _HomeScreenState extends State<HomeScreen> {
     await _load();
   }
 
+  Future<void> _openArrow() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const ArrowLevelSelectScreen()),
+    );
+    await _load();
+  }
+
+  Future<void> _openCrew() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const CrewLevelSelectScreen()),
+    );
+    await _load();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -298,25 +315,27 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: _openLevels,
                   ),
                   const SizedBox(height: 12),
-                  const _ModeCard(
+                  _ModeCard(
                     icon: Icons.alt_route_rounded,
                     title: 'Arrow Escape',
                     subtitle: 'Clear arrows in the correct order',
-                    label: 'COMING NEXT',
-                    active: false,
+                    label: 'PLAY',
+                    active: true,
+                    onTap: _openArrow,
                   ),
                   const SizedBox(height: 12),
-                  const _ModeCard(
+                  _ModeCard(
                     icon: Icons.grid_view_rounded,
                     title: 'Color Crew',
                     subtitle: 'Match characters with colored blocks',
-                    label: 'COMING NEXT',
-                    active: false,
+                    label: 'PLAY',
+                    active: true,
+                    onTap: _openCrew,
                   ),
                   const SizedBox(height: 24),
                   const Center(
                     child: Text(
-                      'Version 0.1 • First playable build',
+                      'Version 0.2 • 3 playable puzzle modes',
                       style: TextStyle(
                         color: Color(0xFF9992AA),
                         fontWeight: FontWeight.w600,
