@@ -807,7 +807,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              '⭐' * stars,
+              List.filled(stars, '⭐').join(),
               style: const TextStyle(fontSize: 34),
             ),
             const SizedBox(height: 12),
