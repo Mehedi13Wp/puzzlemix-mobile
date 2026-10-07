@@ -1,0 +1,72 @@
+name: Release PuzzleMix v0.6.0
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/release-v060.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Create Android platform shell
+        run: |
+          rm -rf /tmp/puzzlemix_shell
+          flutter create /tmp/puzzlemix_shell \
+            --platforms=android \
+            --project-name=puzzlemix_mobile \
+            --org=com.mehedi.puzzlemix \
+            --no-pub
+          cp -R /tmp/puzzlemix_shell/android ./android
+          sed -i 's/android:label="puzzlemix_mobile"/android:label="PuzzleMix"/' android/app/src/main/AndroidManifest.xml
+          mkdir -p android/app/src/main/res/drawable
+          cat > android/app/src/main/res/drawable/puzzlemix_icon.xml <<'EOF'
+          <vector xmlns:android="http://schemas.android.com/apk/res/android"
+              android:width="108dp" android:height="108dp"
+              android:viewportWidth="108" android:viewportHeight="108">
+            <path android:fillColor="#052B19" android:pathData="M0,0h108v108h-108z"/>
+            <path android:fillColor="#F4FFF1" android:pathData="M27,18h54v12h-6v54c0,10 -8,18 -18,18h-6c-10,0 -18,-8 -18,-18v-54h-6z"/>
+            <path android:fillColor="#FFB52E" android:pathData="M54,39a13,13 0,1 0,0.1,0z"/>
+            <path android:fillColor="#E94350" android:pathData="M43,62a10,10 0,1 0,0.1,0z"/>
+            <path android:fillColor="#7CB342" android:pathData="M65,67a9,9 0,1 0,0.1,0z"/>
+            <path android:fillColor="#FFFFFF" android:fillAlpha="0.58" android:pathData="M39,35h5v47h-5z"/>
+          </vector>
+          EOF
+          sed -i 's|android:icon="@mipmap/ic_launcher"|android:icon="@drawable/puzzlemix_icon"|' android/app/src/main/AndroidManifest.xml
+
+      - name: Generate original game sounds
+        run: python3 tools/generate_sounds.py
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Build release APK
+        run: |
+          flutter build apk --release
+          cp build/app/outputs/flutter-apk/app-release.apk PuzzleMix-v0.6.0.apk
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v0.6.0 PuzzleMix-v0.6.0.apk \
+            --title "PuzzleMix v0.6.0 — Ultra Professional Fruity Edition" \
+            --notes "Major polish release: full deep-forest-green visual system, custom-painted semi-realistic fruit artwork instead of emoji tokens, premium glass jars, visible incoming-fruit drop animation, tactile haptics, redesigned home screen and level selection, refined gameplay controls, upgraded celebration presentation, and the existing premium sound system."
