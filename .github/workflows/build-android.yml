@@ -29,6 +29,7 @@ jobs:
             --org=com.mehedi.puzzlemix \
             --no-pub
           cp -R /tmp/puzzlemix_shell/android ./android
+          sed -i 's/android:label="puzzlemix_mobile"/android:label="PuzzleMix"/' android/app/src/main/AndroidManifest.xml
 
       - name: Install dependencies
         run: flutter pub get
