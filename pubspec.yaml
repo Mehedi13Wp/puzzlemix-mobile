@@ -1,7 +1,7 @@
 name: puzzlemix_mobile
 description: A lightweight multi-puzzle casual Android game.
 publish_to: "none"
-version: 0.3.0+2
+version: 0.4.0+3
 
 environment:
   sdk: ">=3.4.0 <4.0.0"
@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   shared_preferences: ^2.3.2
+  audioplayers: ^6.1.0
 
 dev_dependencies:
   flutter_test:
@@ -18,3 +19,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/sounds/

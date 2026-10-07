@@ -6,9 +6,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'arrow_escape.dart';
 import 'color_crew.dart';
 import 'color_sort_fx.dart';
+import 'sound_manager.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SoundManager.instance.initialize();
   runApp(const PuzzleMixApp());
 }
 
@@ -255,8 +257,24 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         _StatPill(icon: Icons.monetization_on_rounded, value: '$coins'),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 6),
                         _StatPill(icon: Icons.star_rounded, value: '$stars'),
+                        const SizedBox(width: 4),
+                        AnimatedBuilder(
+                          animation: SoundManager.instance,
+                          builder: (_, __) => IconButton(
+                            tooltip: SoundManager.instance.enabled
+                                ? 'Sound on'
+                                : 'Sound off',
+                            onPressed: () => SoundManager.instance.toggle(),
+                            icon: Icon(
+                              SoundManager.instance.enabled
+                                  ? Icons.volume_up_rounded
+                                  : Icons.volume_off_rounded,
+                              color: const Color(0xFF7658F4),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 26),
@@ -336,7 +354,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 24),
                   const Center(
                     child: Text(
-                      'Version 0.3 • Liquid FX + celebration animations',
+                      'Version 0.4 • Premium sound + liquid FX',
                       style: TextStyle(
                         color: Color(0xFF9992AA),
                         fontWeight: FontWeight.w600,
@@ -731,18 +749,21 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
 
     if (selected == null) {
       if (tubes[index].isNotEmpty) {
+        SoundManager.instance.tap();
         setState(() => selected = index);
       }
       return;
     }
 
     if (selected == index) {
+      SoundManager.instance.tap();
       setState(() => selected = null);
       return;
     }
 
     final from = selected!;
     if (!_canPour(from, index)) {
+      SoundManager.instance.error();
       setState(() {
         selected = tubes[index].isNotEmpty ? index : null;
       });
@@ -757,6 +778,8 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     );
 
     final amount = _pourAmount(from, index);
+
+    SoundManager.instance.pour();
 
     setState(() {
       isPouring = true;
@@ -774,6 +797,12 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
       }
       moves++;
     });
+
+    final targetSolved = tubes[index].length == tubeCapacity &&
+        tubes[index].every((c) => c == tubes[index].first);
+    if (targetSolved) {
+      SoundManager.instance.match();
+    }
 
     await Future<void>.delayed(const Duration(milliseconds: 360));
     if (!mounted) return;
@@ -835,6 +864,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
 
     if (!mounted) return;
     await _loadCoins();
+    SoundManager.instance.success();
 
     showDialog<void>(
       context: context,

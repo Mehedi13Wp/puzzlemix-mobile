@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'sound_manager.dart';
+
 enum ArrowDir { up, right, down, left }
 
 class ArrowPiece {
@@ -235,6 +237,7 @@ class _ArrowEscapeScreenState extends State<ArrowEscapeScreen> {
     if (finished || !alive.contains(index)) return;
 
     if (_canEscape(index)) {
+      SoundManager.instance.whoosh();
       setState(() {
         alive.remove(index);
         hintIndex = null;
@@ -246,6 +249,7 @@ class _ArrowEscapeScreenState extends State<ArrowEscapeScreen> {
       return;
     }
 
+    SoundManager.instance.error();
     setState(() {
       hearts--;
       wrongTaps++;
@@ -317,6 +321,7 @@ class _ArrowEscapeScreenState extends State<ArrowEscapeScreen> {
 
     if (!mounted) return;
     await _loadCoins();
+    SoundManager.instance.success();
 
     showDialog<void>(
       context: context,

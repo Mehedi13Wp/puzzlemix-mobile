@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'sound_manager.dart';
+
 class CrewLevelSelectScreen extends StatefulWidget {
   const CrewLevelSelectScreen({super.key});
 
@@ -273,11 +275,18 @@ class _ColorCrewScreenState extends State<ColorCrewScreen> {
     final targetIndex = _activeIndexForColor(color);
 
     if (targetIndex < 0 && bench.length >= benchCapacity) {
+      SoundManager.instance.error();
       _showBenchFull();
       return;
     }
 
     history.add(_snapshot());
+
+    if (targetIndex >= 0) {
+      SoundManager.instance.pop();
+    } else {
+      SoundManager.instance.tap();
+    }
 
     setState(() {
       columns[columnIndex].removeLast();
@@ -444,6 +453,7 @@ class _ColorCrewScreenState extends State<ColorCrewScreen> {
 
     if (!mounted) return;
     await _loadCoins();
+    SoundManager.instance.success();
 
     showDialog<void>(
       context: context,

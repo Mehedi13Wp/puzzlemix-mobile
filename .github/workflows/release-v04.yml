@@ -1,14 +1,18 @@
-name: Build Android APK
+name: Release PuzzleMix v0.4
 
 on:
   push:
     branches: [main]
-  workflow_dispatch:
+    paths:
+      - ".github/workflows/release-v04.yml"
+
+permissions:
+  contents: write
 
 jobs:
-  build:
+  release:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
@@ -41,12 +45,14 @@ jobs:
         run: flutter analyze
 
       - name: Build release APK
-        run: flutter build apk --release
+        run: |
+          flutter build apk --release
+          cp build/app/outputs/flutter-apk/app-release.apk PuzzleMix-v0.4.apk
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: PuzzleMix-Android-APK
-          path: build/app/outputs/flutter-apk/app-release.apk
-          if-no-files-found: error
-          retention-days: 14
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v0.4 PuzzleMix-v0.4.apk \
+            --title "PuzzleMix v0.4" \
+            --notes "Version 0.4 adds an original premium sound pack: soft background music, tactile taps, liquid-pour audio, vial-complete chimes, arrow whooshes, Color Crew pops, friendly error cues, celebration audio, and an in-app sound on/off control. It keeps the realistic liquid and confetti effects from v0.3."
