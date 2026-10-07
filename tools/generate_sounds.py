@@ -143,14 +143,14 @@ for i in range(total):
     edge = min(1.0, t / 0.10, (duration - t) / 0.10)
     pulse = 0.72 + 0.28 * math.sin(2 * math.pi * 0.5 * t) ** 2
     chord = (
-        math.sin(2 * math.pi * notes[0] * t) * 0.040
-        + math.sin(2 * math.pi * notes[1] * t) * 0.032
-        + math.sin(2 * math.pi * notes[2] * t) * 0.028
+        math.sin(2 * math.pi * notes[0] * t) * 0.110
+        + math.sin(2 * math.pi * notes[1] * t) * 0.085
+        + math.sin(2 * math.pi * notes[2] * t) * 0.075
     )
     bell_index = int(t // 2) % len(notes)
     phase = t % 2.0
     bell_env = math.exp(-2.7 * phase)
-    bell = math.sin(2 * math.pi * notes[bell_index] * 2 * phase) * 0.030 * bell_env
+    bell = math.sin(2 * math.pi * notes[bell_index] * 2 * phase) * 0.070 * bell_env
     background[i] = (chord * pulse + bell) * edge
 write_wav("background.wav", background)
 

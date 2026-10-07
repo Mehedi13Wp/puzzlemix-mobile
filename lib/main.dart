@@ -166,6 +166,9 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     _load();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      SoundManager.instance.startBackground();
+    });
   }
 
   Future<void> _load() async {

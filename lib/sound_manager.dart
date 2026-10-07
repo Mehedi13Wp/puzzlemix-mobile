@@ -27,11 +27,14 @@ class SoundManager extends ChangeNotifier {
     enabled = prefs.getBool('sound_enabled') ?? true;
 
     await _music.setReleaseMode(ReleaseMode.loop);
-    await _music.setVolume(.12);
+    await _music.setVolume(.48);
+  }
 
-    if (enabled) {
-      await _music.play(AssetSource('sounds/background.wav'));
-    }
+  Future<void> startBackground() async {
+    if (!enabled) return;
+    await _music.stop();
+    await _music.setVolume(.48);
+    await _music.play(AssetSource('sounds/background.wav'));
   }
 
   Future<void> toggle() async {
@@ -40,8 +43,7 @@ class SoundManager extends ChangeNotifier {
     await prefs.setBool('sound_enabled', enabled);
 
     if (enabled) {
-      await _music.stop();
-      await _music.play(AssetSource('sounds/background.wav'));
+      await startBackground();
       await tap();
     } else {
       await _music.stop();
@@ -66,42 +68,42 @@ class SoundManager extends ChangeNotifier {
   Future<void> tap() async {
     if (!enabled) return;
     await _tap.stop();
-    await _tap.play(AssetSource('sounds/tap.wav'), volume: .34);
+    await _tap.play(AssetSource('sounds/tap.wav'), volume: .88);
   }
 
   Future<void> pour() async {
     if (!enabled) return;
     await _pour.stop();
-    await _pour.play(AssetSource('sounds/pour.wav'), volume: .44);
+    await _pour.play(AssetSource('sounds/pour.wav'), volume: .92);
   }
 
   Future<void> match() async {
     if (!enabled) return;
     await _match.stop();
-    await _match.play(AssetSource('sounds/match.wav'), volume: .58);
+    await _match.play(AssetSource('sounds/match.wav'), volume: .98);
   }
 
   Future<void> error() async {
     if (!enabled) return;
     await _error.stop();
-    await _error.play(AssetSource('sounds/error.wav'), volume: .40);
+    await _error.play(AssetSource('sounds/error.wav'), volume: .78);
   }
 
   Future<void> success() async {
     if (!enabled) return;
     await _success.stop();
-    await _success.play(AssetSource('sounds/success.wav'), volume: .68);
+    await _success.play(AssetSource('sounds/success.wav'), volume: 1.0);
   }
 
   Future<void> whoosh() async {
     if (!enabled) return;
     await _whoosh.stop();
-    await _whoosh.play(AssetSource('sounds/whoosh.wav'), volume: .44);
+    await _whoosh.play(AssetSource('sounds/whoosh.wav'), volume: .88);
   }
 
   Future<void> pop() async {
     if (!enabled) return;
     await _pop.stop();
-    await _pop.play(AssetSource('sounds/pop.wav'), volume: .46);
+    await _pop.play(AssetSource('sounds/pop.wav'), volume: .92);
   }
 }
