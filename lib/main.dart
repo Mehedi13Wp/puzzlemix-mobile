@@ -26,12 +26,89 @@ class PuzzleMixApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'sans',
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF7A5CFA),
+          seedColor: const Color(0xFF197844),
           brightness: Brightness.light,
         ),
-        scaffoldBackgroundColor: const Color(0xFFFFF8FC),
+        scaffoldBackgroundColor: const Color(0xFFF1F9EE),
       ),
-      home: const HomeScreen(),
+      home: const SplashScreen(),
+    );
+  }
+}
+
+class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future<void>.delayed(const Duration(milliseconds: 1350), () {
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (_, __, ___) => const HomeScreen(),
+          transitionDuration: const Duration(milliseconds: 500),
+          transitionsBuilder: (_, animation, __, child) =>
+              FadeTransition(opacity: animation, child: child),
+        ),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: PremiumFruitBackground(
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 118,
+                height: 118,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: .82),
+                  borderRadius: BorderRadius.circular(34),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF185F39).withValues(alpha: .20),
+                      blurRadius: 30,
+                      offset: const Offset(0, 14),
+                    ),
+                  ],
+                ),
+                child: const Center(
+                  child: FruitToken(fruitId: 5, size: 78),
+                ),
+              ),
+              const SizedBox(height: 22),
+              const Text(
+                'PuzzleMix',
+                style: TextStyle(
+                  color: Color(0xFF164D2D),
+                  fontSize: 38,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -.8,
+                ),
+              ),
+              const SizedBox(height: 5),
+              const Text(
+                'Relax. Match. Enjoy.',
+                style: TextStyle(
+                  color: Color(0xFF5E7B65),
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -51,100 +128,45 @@ class PuzzleLevel {
 const int tubeCapacity = 4;
 
 const gameColors = <Color>[
-  Color(0xFFFF5C72),
-  Color(0xFF38C88A),
-  Color(0xFF7A5CFA),
-  Color(0xFFFFA52F),
-  Color(0xFF2DC8C4),
-  Color(0xFFFF67B0),
-  Color(0xFF8BD63D),
-  Color(0xFF3FA9F5),
+  Color(0xFFFFD43B),
+  Color(0xFFFF922B),
+  Color(0xFFFFB13B),
+  Color(0xFFE94A55),
+  Color(0xFF8458C8),
+  Color(0xFFF34E64),
+  Color(0xFF7CB342),
+  Color(0xFFA7C84B),
 ];
 
 final levels = <PuzzleLevel>[
-  const PuzzleLevel(
-    id: 1,
-    par: 8,
-    tubes: [
-      [0, 1, 0, 1],
-      [1, 0, 1, 0],
-      [2, 2, 2, 2],
-      [],
-      [],
-    ],
-  ),
-  const PuzzleLevel(
-    id: 2,
-    par: 12,
-    tubes: [
-      [0, 1, 2, 0],
-      [1, 2, 0, 1],
-      [2, 0, 1, 2],
-      [],
-      [],
-    ],
-  ),
-  const PuzzleLevel(
-    id: 3,
-    par: 18,
-    tubes: [
-      [0, 1, 2, 3],
-      [1, 2, 3, 0],
-      [2, 3, 0, 1],
-      [3, 0, 1, 2],
-      [],
-      [],
-    ],
-  ),
-  const PuzzleLevel(
-    id: 4,
-    par: 20,
-    tubes: [
-      [4, 0, 1, 2],
-      [2, 4, 0, 1],
-      [1, 2, 4, 0],
-      [0, 1, 2, 4],
-      [],
-      [],
-    ],
-  ),
-  const PuzzleLevel(
-    id: 5,
-    par: 24,
-    tubes: [
-      [0, 1, 2, 3],
-      [4, 0, 1, 2],
-      [3, 4, 0, 1],
-      [2, 3, 4, 0],
-      [1, 2, 3, 4],
-      [],
-      [],
-    ],
-  ),
-  const PuzzleLevel(
-    id: 6,
-    par: 28,
-    tubes: [
-      [0, 5, 2, 3],
-      [4, 0, 5, 2],
-      [3, 4, 0, 5],
-      [2, 3, 4, 0],
-      [5, 2, 3, 4],
-      [],
-      [],
-    ],
-  ),
+  const PuzzleLevel(id: 1, par: 6, tubes: [[0, 0, 0, 1], [1, 1, 0, 1], [], []]),
+  const PuzzleLevel(id: 2, par: 7, tubes: [[1, 1, 0, 0], [1, 0, 1, 0], [], []]),
+  const PuzzleLevel(id: 3, par: 10, tubes: [[0, 1, 0, 2], [1, 0, 0, 2], [1, 2, 2, 1], [], []]),
+  const PuzzleLevel(id: 4, par: 9, tubes: [[0, 2, 2, 1], [0, 1, 1, 2], [1, 2, 0, 0], [], []]),
+  const PuzzleLevel(id: 5, par: 8, tubes: [[2, 0, 0, 0], [1, 2, 0, 2], [1, 1, 1, 2], [], []]),
+  const PuzzleLevel(id: 6, par: 13, tubes: [[3, 2, 2, 0], [0, 1, 2, 3], [3, 1, 1, 2], [3, 1, 0, 0], [], []]),
+  const PuzzleLevel(id: 7, par: 15, tubes: [[2, 2, 3, 1], [2, 0, 3, 1], [3, 0, 2, 0], [3, 1, 0, 1], [], []]),
+  const PuzzleLevel(id: 8, par: 12, tubes: [[2, 2, 0, 2], [3, 3, 0, 1], [1, 2, 0, 1], [0, 3, 3, 1], [], []]),
+  const PuzzleLevel(id: 9, par: 18, tubes: [[1, 0, 3, 2], [4, 0, 2, 2], [3, 2, 1, 0], [0, 4, 1, 4], [4, 3, 1, 3], [], []]),
+  const PuzzleLevel(id: 10, par: 18, tubes: [[2, 3, 4, 3], [0, 0, 4, 1], [2, 0, 1, 4], [4, 3, 3, 1], [2, 1, 0, 2], [], []]),
+  const PuzzleLevel(id: 11, par: 17, tubes: [[4, 0, 3, 4], [1, 1, 1, 4], [3, 4, 0, 1], [2, 0, 3, 2], [0, 3, 2, 2], [], []]),
+  const PuzzleLevel(id: 12, par: 21, tubes: [[0, 4, 2, 4], [5, 1, 0, 3], [5, 5, 3, 3], [1, 0, 2, 2], [0, 2, 1, 4], [1, 3, 5, 4], [], []]),
+  const PuzzleLevel(id: 13, par: 20, tubes: [[2, 5, 3, 3], [1, 4, 5, 2], [4, 3, 0, 5], [2, 3, 4, 4], [1, 1, 0, 0], [0, 1, 2, 5], [], []]),
+  const PuzzleLevel(id: 14, par: 23, tubes: [[0, 3, 4, 1], [0, 5, 2, 1], [0, 1, 2, 2], [3, 4, 1, 5], [0, 4, 5, 4], [3, 3, 5, 2], [], []]),
+  const PuzzleLevel(id: 15, par: 21, tubes: [[5, 4, 2, 0], [4, 3, 0, 2], [4, 4, 1, 5], [1, 2, 1, 1], [5, 3, 5, 3], [3, 0, 0, 2], [], []]),
 ];
 
 const dailyLevel = PuzzleLevel(
   id: 1000,
-  par: 21,
+  par: 24,
   tubes: [
-    [0, 1, 2, 3],
-    [1, 2, 3, 4],
-    [2, 3, 4, 0],
-    [3, 4, 0, 1],
-    [4, 0, 1, 2],
+    [2, 4, 6, 5],
+    [0, 2, 1, 2],
+    [0, 1, 6, 4],
+    [2, 3, 3, 0],
+    [5, 4, 3, 6],
+    [5, 5, 0, 6],
+    [1, 1, 3, 4],
     [],
     [],
   ],
@@ -222,7 +244,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [Color(0xFFFFE8F2), Color(0xFFEDE8FF)],
+                    colors: [Color(0xFF0F6A3A), Color(0xFF2FAE62), Color(0xFF9AD84A)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -244,15 +266,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 style: TextStyle(
                                   fontSize: 32,
                                   fontWeight: FontWeight.w900,
-                                  color: Color(0xFF241E3A),
+                                  color: Colors.white,
                                 ),
                               ),
                               SizedBox(height: 4),
                               Text(
-                                'Play. Think. Relax.',
+                                'Relax. Match. Enjoy.',
                                 style: TextStyle(
                                   fontSize: 15,
-                                  color: Color(0xFF756E8B),
+                                  color: Color(0xFFE8F7EA),
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -274,7 +296,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               SoundManager.instance.enabled
                                   ? Icons.volume_up_rounded
                                   : Icons.volume_off_rounded,
-                              color: const Color(0xFF7658F4),
+                              color: const Color(0xFF197844),
                             ),
                           ),
                         ),
@@ -285,7 +307,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       onPressed: _openLevels,
                       style: FilledButton.styleFrom(
                         minimumSize: const Size.fromHeight(58),
-                        backgroundColor: const Color(0xFF7658F4),
+                        backgroundColor: const Color(0xFFFFB52E),
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
@@ -329,9 +351,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   const SizedBox(height: 12),
                   _ModeCard(
-                    icon: Icons.science_rounded,
-                    title: 'Color Sort',
-                    subtitle: 'Sort every color into its own vial',
+                    icon: Icons.spa_rounded,
+                    title: 'Fruit Sort Deluxe',
+                    subtitle: 'Sort juicy fruits into matching glass jars',
                     label: 'PLAY',
                     active: true,
                     onTap: _openLevels,
@@ -357,7 +379,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 24),
                   const Center(
                     child: Text(
-                      'Version 0.4 • Premium sound + liquid FX',
+                      'Version 0.5 • Premium Fruity Edition',
                       style: TextStyle(
                         color: Color(0xFF9992AA),
                         fontWeight: FontWeight.w600,
@@ -429,7 +451,7 @@ class _DailyCard extends StatelessWidget {
                 height: 62,
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFFFF739E), Color(0xFFFFA15D)],
+                    colors: [Color(0xFF1C8A4C), Color(0xFFFFC54D)],
                   ),
                   borderRadius: BorderRadius.circular(18),
                 ),
@@ -445,7 +467,7 @@ class _DailyCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Daily Prism',
+                      'Daily Harvest',
                       style: TextStyle(
                         fontSize: 19,
                         fontWeight: FontWeight.w900,
@@ -512,7 +534,7 @@ class _ModeCard extends StatelessWidget {
                 child: Icon(
                   icon,
                   color: active
-                      ? const Color(0xFF7658F4)
+                      ? const Color(0xFF197844)
                       : const Color(0xFFAAA3B3),
                 ),
               ),
@@ -546,7 +568,7 @@ class _ModeCard extends StatelessWidget {
                 label,
                 style: TextStyle(
                   color: active
-                      ? const Color(0xFF7658F4)
+                      ? const Color(0xFF197844)
                       : const Color(0xFFAAA3B3),
                   fontWeight: FontWeight.w900,
                   fontSize: 12,
@@ -600,7 +622,7 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Color Sort',
+          'Fruit Sort Deluxe',
           style: TextStyle(fontWeight: FontWeight.w900),
         ),
         actions: [
@@ -636,7 +658,7 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
                 borderRadius: BorderRadius.circular(22),
                 border: Border.all(
                   color: unlocked
-                      ? const Color(0xFFE5DFF9)
+                      ? const Color(0xFFCBE8CF)
                       : const Color(0xFFE5E1E8),
                 ),
               ),
@@ -644,9 +666,9 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    unlocked ? Icons.science_rounded : Icons.lock_rounded,
+                    unlocked ? Icons.eco_rounded : Icons.lock_rounded,
                     color: unlocked
-                        ? const Color(0xFF7658F4)
+                        ? const Color(0xFF197844)
                         : const Color(0xFFAAA3B3),
                     size: 30,
                   ),
@@ -710,6 +732,9 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     super.initState();
     _resetBoard();
     _loadCoins();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _maybeShowTutorial();
+    });
   }
 
   void _resetBoard() {
@@ -727,6 +752,73 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     final prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
     setState(() => coins = prefs.getInt('coins') ?? 200);
+  }
+
+  Future<void> _maybeShowTutorial() async {
+    if (widget.daily || widget.level.id != 1) return;
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getBool('fruit_tutorial_seen') ?? false) return;
+    await Future<void>.delayed(const Duration(milliseconds: 320));
+    if (!mounted) return;
+    await _showTutorial();
+    await prefs.setBool('fruit_tutorial_seen', true);
+  }
+
+  Future<void> _showTutorial() async {
+    await showDialog<void>(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(28),
+        ),
+        title: const Text(
+          'How to Play 🍓',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            color: Color(0xFF174D2D),
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _TutorialRow(
+              fruitId: 3,
+              title: '1. Tap a jar',
+              text: 'Choose the top fruit you want to move.',
+            ),
+            SizedBox(height: 13),
+            _TutorialRow(
+              fruitId: 1,
+              title: '2. Tap another jar',
+              text: 'Use an empty jar or place it on the same fruit.',
+            ),
+            SizedBox(height: 13),
+            _TutorialRow(
+              fruitId: 2,
+              title: '3. Complete every jar',
+              text: 'Fill each jar with four matching fruits.',
+            ),
+          ],
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(),
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFF197844),
+            ),
+            child: const Text(
+              'GOT IT',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   bool _canPour(int from, int to) {
@@ -770,6 +862,12 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
       setState(() {
         selected = tubes[index].isNotEmpty ? index : null;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          duration: Duration(milliseconds: 900),
+          content: Text('Only matching fruits can stack 🍊'),
+        ),
+      );
       return;
     }
 
@@ -782,7 +880,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
 
     final amount = _pourAmount(from, index);
 
-    SoundManager.instance.pour();
+    SoundManager.instance.whoosh();
 
     setState(() {
       isPouring = true;
@@ -800,6 +898,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
       }
       moves++;
     });
+    SoundManager.instance.pop();
 
     final targetSolved = tubes[index].length == tubeCapacity &&
         tubes[index].every((c) => c == tubes[index].first);
@@ -943,7 +1042,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Hint: Tube ${from + 1}  →  Tube ${to + 1}'),
+        content: Text('Hint: Jar ${from + 1}  →  Jar ${to + 1}'),
       ),
     );
   }
@@ -952,14 +1051,14 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     if (finished) return;
     if (tubes.length >= widget.level.tubes.length + 2) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Maximum 2 extra vials.')),
+        const SnackBar(content: Text('Maximum 2 extra jars.')),
       );
       return;
     }
     const cost = 50;
     if (coins < cost) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You need 50 coins for an extra vial.')),
+        const SnackBar(content: Text('You need 50 coins for an extra jar.')),
       );
       return;
     }
@@ -977,7 +1076,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final title = widget.daily ? 'Daily Prism' : 'Level ${widget.level.id}';
+    final title = widget.daily ? 'Daily Harvest' : 'Level ${widget.level.id}';
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -997,6 +1096,11 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
         ),
         centerTitle: true,
         actions: [
+          IconButton(
+            tooltip: 'How to play',
+            onPressed: _showTutorial,
+            icon: const Icon(Icons.help_outline_rounded),
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 15),
             child: Center(
@@ -1008,26 +1112,14 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
           ),
         ],
       ),
-      body: Container(
-        width: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFFFFF5FA),
-              Color(0xFFF0E9FF),
-              Color(0xFFEAF5FF),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+      body: PremiumFruitBackground(
         child: Column(
           children: [
             const SizedBox(height: 14),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 24),
               child: Text(
-                'Tap a vial, then tap another vial to pour matching colors.',
+                'Tap a jar, then move fruit onto the same fruit or an empty jar.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Color(0xFF777083),
@@ -1084,8 +1176,8 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: _GameAction(
-                      icon: Icons.science_outlined,
-                      label: '+ Vial',
+                      icon: Icons.add_box_rounded,
+                      label: '+ Jar',
                       small: '50',
                       onTap: _addVial,
                     ),
@@ -1118,100 +1210,57 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
   }
 }
 
-class TubeView extends StatelessWidget {
-  final int number;
-  final List<int> colors;
-  final bool selected;
-  final VoidCallback onTap;
+class _TutorialRow extends StatelessWidget {
+  final int fruitId;
+  final String title;
+  final String text;
 
-  const TubeView({
-    super.key,
-    required this.number,
-    required this.colors,
-    required this.selected,
-    required this.onTap,
+  const _TutorialRow({
+    required this.fruitId,
+    required this.title,
+    required this.text,
   });
 
   @override
   Widget build(BuildContext context) {
-    const tubeHeight = 158.0;
-    const tubeWidth = 58.0;
-    const innerHeight = 142.0;
-    const segmentHeight = innerHeight / tubeCapacity;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 160),
-        transform: Matrix4.translationValues(0, selected ? -10 : 0, 0),
-        child: Column(
-          children: [
-            Container(
-              width: tubeWidth,
-              height: tubeHeight,
-              padding: const EdgeInsets.fromLTRB(5, 8, 5, 6),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: .42),
-                border: Border.all(
-                  color: selected
-                      ? const Color(0xFF7658F4)
-                      : const Color(0xFFCBC4D4),
-                  width: selected ? 3 : 2,
-                ),
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(26),
-                  bottomRight: Radius.circular(26),
-                  topLeft: Radius.circular(10),
-                  topRight: Radius.circular(10),
-                ),
-                boxShadow: selected
-                    ? [
-                        BoxShadow(
-                          color: const Color(0xFF7658F4).withValues(alpha: .20),
-                          blurRadius: 14,
-                          spreadRadius: 3,
-                        ),
-                      ]
-                    : null,
-              ),
-              child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(20),
-                  bottomRight: Radius.circular(20),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: colors.reversed
-                      .map(
-                        (id) => Container(
-                          height: segmentHeight,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: gameColors[id],
-                            border: Border(
-                              top: BorderSide(
-                                color: Colors.white.withValues(alpha: .18),
-                              ),
-                            ),
-                          ),
-                        ),
-                      )
-                      .toList(),
-                ),
-              ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              '$number',
-              style: const TextStyle(
-                color: Color(0xFF9A93A5),
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ],
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(
+            color: const Color(0xFFE9F6E6),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Center(
+            child: FruitToken(fruitId: fruitId, size: 38),
+          ),
         ),
-      ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Color(0xFF174D2D),
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                text,
+                style: const TextStyle(
+                  color: Color(0xFF66776A),
+                  fontSize: 13,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -1232,7 +1281,7 @@ class _GameAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: const Color(0xFFF7F3FB),
+      color: const Color(0xFFF2F8EF),
       borderRadius: BorderRadius.circular(18),
       child: InkWell(
         onTap: onTap,
@@ -1241,7 +1290,7 @@ class _GameAction extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
           child: Column(
             children: [
-              Icon(icon, color: const Color(0xFF332C45)),
+              Icon(icon, color: const Color(0xFF244B30)),
               const SizedBox(height: 4),
               Text(
                 label,
@@ -1257,7 +1306,7 @@ class _GameAction extends StatelessWidget {
                     : Text(
                         small,
                         style: const TextStyle(
-                          color: Color(0xFFFF9C24),
+                          color: Color(0xFF17824A),
                           fontWeight: FontWeight.w900,
                           fontSize: 11,
                         ),
