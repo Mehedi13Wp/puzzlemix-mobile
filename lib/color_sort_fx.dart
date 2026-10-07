@@ -559,7 +559,7 @@ class _LevelCompleteCelebrationState extends State<LevelCompleteCelebration>
                       parent: controller,
                       curve: Interval(
                         begin,
-                        math.min(1, begin + .35),
+                        math.min(1.0, begin + .35),
                         curve: Curves.elasticOut,
                       ),
                     );
@@ -663,7 +663,7 @@ class _CelebrationPainter extends CustomPainter {
       final y = -18 + progress * (size.height + 85) * speed;
       final x = x0 + math.sin(progress * math.pi * 4 + i) * 12;
       final fade =
-          (1 - math.max(0, progress - .82) / .18).clamp(0.0, 1.0);
+          (1 - math.max(0, progress - .82) / .18).clamp(0.0, 1.0).toDouble();
       final paint = Paint()
         ..color = colors[i % colors.length].withValues(alpha: fade);
       canvas.save();
