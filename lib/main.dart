@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'arrow_escape.dart';
 import 'color_crew.dart';
+import 'color_sort_fx.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -335,7 +336,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const SizedBox(height: 24),
                   const Center(
                     child: Text(
-                      'Version 0.2 • 3 playable puzzle modes',
+                      'Version 0.3 • Liquid FX + celebration animations',
                       style: TextStyle(
                         color: Color(0xFF9992AA),
                         fontWeight: FontWeight.w600,
@@ -679,6 +680,9 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
   int? selected;
   int coins = 200;
   bool finished = false;
+  bool isPouring = false;
+  int? pouringFrom;
+  int? pouringTo;
 
   @override
   void initState() {
@@ -693,6 +697,9 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     moves = 0;
     selected = null;
     finished = false;
+    isPouring = false;
+    pouringFrom = null;
+    pouringTo = null;
   }
 
   Future<void> _loadCoins() async {
@@ -719,8 +726,8 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     return math.min(same, tubeCapacity - tubes[to].length);
   }
 
-  void _tapTube(int index) {
-    if (finished) return;
+  Future<void> _tapTube(int index) async {
+    if (finished || isPouring) return;
 
     if (selected == null) {
       if (tubes[index].isNotEmpty) {
@@ -750,16 +757,35 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     );
 
     final amount = _pourAmount(from, index);
+
+    setState(() {
+      isPouring = true;
+      pouringFrom = from;
+      pouringTo = index;
+      selected = null;
+    });
+
+    await Future<void>.delayed(const Duration(milliseconds: 220));
+    if (!mounted) return;
+
     setState(() {
       for (int i = 0; i < amount; i++) {
         tubes[index].add(tubes[from].removeLast());
       }
       moves++;
-      selected = null;
+    });
+
+    await Future<void>.delayed(const Duration(milliseconds: 360));
+    if (!mounted) return;
+
+    setState(() {
+      isPouring = false;
+      pouringFrom = null;
+      pouringTo = null;
     });
 
     if (_isSolved()) {
-      _finishLevel();
+      await _finishLevel();
     }
   }
 
@@ -813,49 +839,16 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(26),
-        ),
-        title: const Text(
-          'Puzzle Complete! 🎉',
-          textAlign: TextAlign.center,
-          style: TextStyle(fontWeight: FontWeight.w900),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              List.filled(stars, '⭐').join(),
-              style: const TextStyle(fontSize: 34),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              '$moves moves • Par ${widget.level.par}',
-              style: const TextStyle(fontWeight: FontWeight.w700),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              alreadyRewarded
-                  ? 'Level already rewarded'
-                  : '+$reward coins',
-              style: const TextStyle(
-                color: Color(0xFF7658F4),
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-          ],
-        ),
-        actionsAlignment: MainAxisAlignment.center,
-        actions: [
-          FilledButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pop(true);
-            },
-            child: const Text('CONTINUE'),
-          ),
-        ],
+      builder: (_) => LevelCompleteCelebration(
+        stars: stars,
+        moves: moves,
+        par: widget.level.par,
+        reward: reward,
+        alreadyRewarded: alreadyRewarded,
+        onContinue: () {
+          Navigator.of(context).pop();
+          Navigator.of(context).pop(true);
+        },
       ),
     );
   }
@@ -1023,10 +1016,13 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
                     runSpacing: 25,
                     children: List.generate(
                       tubes.length,
-                      (index) => TubeView(
+                      (index) => RealisticTube(
                         number: index + 1,
-                        colors: tubes[index],
+                        layers: tubes[index],
+                        palette: gameColors,
                         selected: selected == index,
+                        pouringOut: pouringFrom == index,
+                        pouringIn: pouringTo == index,
                         onTap: () => _tapTube(index),
                       ),
                     ),
