@@ -1,0 +1,55 @@
+name: Release PuzzleMix v0.3
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/release-v03.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Create Android platform shell
+        run: |
+          rm -rf /tmp/puzzlemix_shell
+          flutter create /tmp/puzzlemix_shell \
+            --platforms=android \
+            --project-name=puzzlemix_mobile \
+            --org=com.mehedi.puzzlemix \
+            --no-pub
+          cp -R /tmp/puzzlemix_shell/android ./android
+          sed -i 's/android:label="puzzlemix_mobile"/android:label="PuzzleMix"/' android/app/src/main/AndroidManifest.xml
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Build release APK
+        run: |
+          flutter build apk --release
+          cp build/app/outputs/flutter-apk/app-release.apk PuzzleMix-v0.3.apk
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v0.3 PuzzleMix-v0.3.apk \
+            --title "PuzzleMix v0.3" \
+            --notes "Version 0.3 adds realistic animated liquid vials, visible pour/fill motion, solved-vial glow, improved Daily Prism balance, the correct PuzzleMix launcher name, and a polished level-complete celebration with trophy, animated stars and confetti."
