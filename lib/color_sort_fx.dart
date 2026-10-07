@@ -192,7 +192,7 @@ class _RealisticTubeState extends State<RealisticTube>
                                             ),
                                     ),
                                   );
-                                }).reversed.toList(),
+                                }).toList(),
                               ),
                               Positioned(
                                 left: 8,
