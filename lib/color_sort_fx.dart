@@ -26,10 +26,12 @@ const fruitEmojis = <String>[
 
 class PremiumFruitBackground extends StatefulWidget {
   final Widget child;
+  final bool dark;
 
   const PremiumFruitBackground({
     super.key,
     required this.child,
+    this.dark = false,
   });
 
   @override
@@ -58,16 +60,25 @@ class _PremiumFruitBackgroundState extends State<PremiumFruitBackground>
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
+    final colors = widget.dark
+        ? const [
+            Color(0xFF062E1A),
+            Color(0xFF0A4828),
+            Color(0xFF11643A),
+            Color(0xFF0A3A22),
+          ]
+        : const [
             Color(0xFFEAF9E7),
             Color(0xFFD8F2D4),
             Color(0xFFBDE4B7),
-          ],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+          ];
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: colors,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
       ),
       child: Stack(
@@ -76,7 +87,10 @@ class _PremiumFruitBackgroundState extends State<PremiumFruitBackground>
           AnimatedBuilder(
             animation: controller,
             builder: (_, __) => CustomPaint(
-              painter: _LeafPainter(controller.value),
+              painter: _LeafPainter(
+                controller.value,
+                dark: widget.dark,
+              ),
             ),
           ),
           widget.child,
@@ -88,8 +102,12 @@ class _PremiumFruitBackgroundState extends State<PremiumFruitBackground>
 
 class _LeafPainter extends CustomPainter {
   final double progress;
+  final bool dark;
 
-  const _LeafPainter(this.progress);
+  const _LeafPainter(
+    this.progress, {
+    this.dark = false,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -113,14 +131,20 @@ class _LeafPainter extends CustomPainter {
           height: 17 + (i % 2) * 5,
         ),
         Paint()
-          ..color = const Color(0xFF287B43)
-              .withValues(alpha: i.isEven ? .075 : .045),
+          ..color = (dark
+                  ? const Color(0xFF74D58C)
+                  : const Color(0xFF287B43))
+              .withValues(
+                alpha: dark
+                    ? (i.isEven ? .10 : .065)
+                    : (i.isEven ? .075 : .045),
+              ),
       );
       canvas.restore();
     }
 
     final glow = Paint()
-      ..color = Colors.white.withValues(alpha: .20)
+      ..color = Colors.white.withValues(alpha: dark ? .08 : .20)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 26);
     canvas.drawCircle(Offset(size.width * .18, size.height * .22), 62, glow);
     canvas.drawCircle(Offset(size.width * .82, size.height * .66), 74, glow);
@@ -128,7 +152,7 @@ class _LeafPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _LeafPainter oldDelegate) =>
-      oldDelegate.progress != progress;
+      oldDelegate.progress != progress || oldDelegate.dark != dark;
 }
 
 class FruitToken extends StatelessWidget {

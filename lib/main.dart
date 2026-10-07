@@ -1079,6 +1079,9 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     final title = widget.daily ? 'Daily Harvest' : 'Level ${widget.level.id}';
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color(0xFF073B21),
+        foregroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
         title: Column(
           children: [
             Text(
@@ -1089,7 +1092,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
               'Moves $moves  •  Par ${widget.level.par}',
               style: const TextStyle(
                 fontSize: 12,
-                color: Color(0xFF81798E),
+                color: Color(0xFFBFE8C9),
               ),
             ),
           ],
@@ -1113,6 +1116,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
         ],
       ),
       body: PremiumFruitBackground(
+        dark: true,
         child: Column(
           children: [
             const SizedBox(height: 14),
@@ -1122,8 +1126,8 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
                 'Tap a jar, then move fruit onto the same fruit or an empty jar.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Color(0xFF777083),
-                  fontWeight: FontWeight.w600,
+                  color: Color(0xFFE4F6E7),
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
@@ -1158,7 +1162,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
             Container(
               padding: const EdgeInsets.fromLTRB(14, 13, 14, 18),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: .86),
+                color: const Color(0xFFF7FFF5).withValues(alpha: .94),
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(30),
                 ),
