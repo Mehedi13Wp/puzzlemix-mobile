@@ -1,0 +1,83 @@
+name: Play Store Preflight
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "lib/**"
+      - "pubspec.yaml"
+      - "tools/**"
+      - "PRIVACY_POLICY.md"
+      - "DATA_SAFETY.md"
+      - "PLAY_STORE_LISTING.md"
+      - "PLAY_STORE_CHECKLIST.md"
+      - ".github/workflows/play-store-preflight.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Create API 36 Play shell
+        run: |
+          rm -rf /tmp/puzzlemix_shell
+          flutter create /tmp/puzzlemix_shell \
+            --platforms=android \
+            --project-name=puzzlemix \
+            --org=com.mehedi \
+            --no-pub
+          cp -R /tmp/puzzlemix_shell/android ./android
+          python3 tools/configure_play_android.py --skip-signing
+
+      - name: Check Play Store readiness
+        run: python3 tools/check_play_readiness.py
+
+      - name: Generate original game sounds
+        run: python3 tools/generate_sounds.py
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Build release-mode AAB preflight
+        run: flutter build appbundle --release
+
+      - name: Build release-mode APK preflight
+        run: flutter build apk --release
+
+      - name: Check 16 KB APK alignment
+        run: |
+          ZIPALIGN=$(find "$ANDROID_SDK_ROOT/build-tools" -name zipalign | sort -V | tail -1)
+          "$ZIPALIGN" -c -P 16 -v 4 build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Verify package and target API
+        run: |
+          APKSIGNER=$(find "$ANDROID_SDK_ROOT/build-tools" -name apksigner | sort -V | tail -1)
+          "$APKSIGNER" verify --verbose build/app/outputs/flutter-apk/app-release.apk
+          echo "Play preflight compiled for package com.mehedi.puzzlemix and target API 36."
+
+      - name: Upload preflight binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: PuzzleMix-PREFLIGHT-DO-NOT-UPLOAD-TO-PLAY
+          path: |
+            build/app/outputs/bundle/release/app-release.aab
+            build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+          retention-days: 7
