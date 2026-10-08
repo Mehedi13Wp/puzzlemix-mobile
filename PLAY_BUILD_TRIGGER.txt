@@ -1,0 +1,6 @@
+# PuzzleMix signed Play build trigger
+
+This file exists only to start the signed Google Play build after the four permanent
+GitHub Actions signing secrets have been configured.
+
+Do not place passwords, keystore data, or secret values in this file.

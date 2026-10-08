@@ -2,6 +2,10 @@ name: Build Play Store AAB
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "PLAY_BUILD_TRIGGER.txt"
 
 permissions:
   contents: read
