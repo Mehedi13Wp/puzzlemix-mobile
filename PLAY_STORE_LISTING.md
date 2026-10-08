@@ -76,7 +76,11 @@ Re-check this declaration before every Play submission if ads, analytics, accoun
 
 ## Privacy policy URL for Play Console
 
-Use this public URL after the policy commit is on the main branch:
+Preferred URL after GitHub Pages is enabled for the repository:
+
+https://mehedi13wp.github.io/puzzlemix-mobile/privacy.html
+
+Repository-hosted fallback:
 
 https://raw.githubusercontent.com/Mehedi13Wp/puzzlemix-mobile/main/PRIVACY_POLICY.md
 

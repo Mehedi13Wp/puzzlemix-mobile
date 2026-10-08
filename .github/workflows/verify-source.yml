@@ -37,6 +37,10 @@ jobs:
             --org=com.mehedi \
             --no-pub
           cp -R /tmp/puzzlemix_shell/android ./android
+          python3 tools/configure_play_android.py --skip-signing
+
+      - name: Check Play Store readiness
+        run: python3 tools/check_play_readiness.py
 
       - name: Generate game sounds
         run: python3 tools/generate_sounds.py

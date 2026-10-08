@@ -2,8 +2,12 @@ from pathlib import Path
 import re
 import sys
 
+PACKAGE = "com.mehedi.puzzlemix"
+TARGET_API = 36
+
 gradle = Path("android/app/build.gradle.kts")
 manifest = Path("android/app/src/main/AndroidManifest.xml")
+skip_signing = "--skip-signing" in sys.argv
 
 if not gradle.exists():
     raise SystemExit("android/app/build.gradle.kts not found")
@@ -12,14 +16,29 @@ text = gradle.read_text(encoding="utf-8")
 
 text = text.replace(
     "compileSdk = flutter.compileSdkVersion",
-    "compileSdk = 36",
+    f"compileSdk = {TARGET_API}",
 )
 text = text.replace(
     "targetSdk = flutter.targetSdkVersion",
-    "targetSdk = 36",
+    f"targetSdk = {TARGET_API}",
 )
 
-release_signing = """    signingConfigs {
+# The Play package ID is permanent once the app is created in Play Console.
+text = re.sub(
+    r'namespace\s*=\s*"[^"]+"',
+    f'namespace = "{PACKAGE}"',
+    text,
+    count=1,
+)
+text = re.sub(
+    r'applicationId\s*=\s*"[^"]+"',
+    f'applicationId = "{PACKAGE}"',
+    text,
+    count=1,
+)
+
+if not skip_signing:
+    release_signing = """    signingConfigs {
         create("release") {
             val keyProperties = java.util.Properties()
             val keyPropertiesFile = rootProject.file("key.properties")
@@ -33,19 +52,28 @@ release_signing = """    signingConfigs {
 
 """
 
-if 'create("release")' not in text:
-    marker = "    buildTypes {"
-    if marker not in text:
-        raise SystemExit("Could not locate buildTypes block")
-    text = text.replace(marker, release_signing + marker, 1)
+    if 'create("release")' not in text:
+        marker = "    buildTypes {"
+        if marker not in text:
+            raise SystemExit("Could not locate buildTypes block")
+        text = text.replace(marker, release_signing + marker, 1)
 
-text = text.replace(
-    'signingConfig = signingConfigs.getByName("debug")',
-    'signingConfig = signingConfigs.getByName("release")',
-)
+    text = text.replace(
+        'signingConfig = signingConfigs.getByName("debug")',
+        'signingConfig = signingConfigs.getByName("release")',
+    )
 
-if 'signingConfig = signingConfigs.getByName("release")' not in text:
-    raise SystemExit("Release signing config was not applied")
+    if 'signingConfig = signingConfigs.getByName("release")' not in text:
+        raise SystemExit("Release signing config was not applied")
+
+if f'namespace = "{PACKAGE}"' not in text:
+    raise SystemExit("Play namespace was not applied")
+if f'applicationId = "{PACKAGE}"' not in text:
+    raise SystemExit("Play applicationId was not applied")
+if f"compileSdk = {TARGET_API}" not in text:
+    raise SystemExit("compileSdk 36 was not applied")
+if f"targetSdk = {TARGET_API}" not in text:
+    raise SystemExit("targetSdk 36 was not applied")
 
 gradle.write_text(text, encoding="utf-8")
 
@@ -55,8 +83,12 @@ if manifest.exists():
     m = m.replace('android:label="puzzlemix_mobile"', 'android:label="PuzzleMix"')
     manifest.write_text(m, encoding="utf-8")
 
-print("Configured Android for Play Store:")
-print("- package: com.mehedi.puzzlemix")
-print("- compileSdk: 36")
-print("- targetSdk: 36")
-print("- release signing: permanent upload keystore")
+print("Configured Android for Google Play:")
+print(f"- package: {PACKAGE}")
+print(f"- compileSdk: {TARGET_API}")
+print(f"- targetSdk: {TARGET_API}")
+print(
+    "- release signing: skipped for source verification"
+    if skip_signing
+    else "- release signing: permanent upload keystore"
+)

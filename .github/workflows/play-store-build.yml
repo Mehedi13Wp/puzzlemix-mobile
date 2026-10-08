@@ -21,6 +21,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check Play Store readiness
+        run: python3 tools/check_play_readiness.py
+
       - name: Validate permanent signing secrets
         run: |
           test -n "$PLAY_UPLOAD_KEYSTORE_BASE64" || (echo "Missing PLAY_UPLOAD_KEYSTORE_BASE64" && exit 1)
