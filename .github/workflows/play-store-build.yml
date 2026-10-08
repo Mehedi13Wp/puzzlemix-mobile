@@ -1,4 +1,4 @@
-name: Build Signed Android
+name: Build Play Store AAB
 
 on:
   workflow_dispatch:
@@ -7,9 +7,9 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  play-store:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
 
     env:
       PLAY_UPLOAD_KEYSTORE_BASE64: ${{ secrets.PLAY_UPLOAD_KEYSTORE_BASE64 }}
@@ -34,7 +34,7 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Create stable Android shell
+      - name: Create Play Store Android shell
         run: |
           rm -rf /tmp/puzzlemix_shell
           flutter create /tmp/puzzlemix_shell \
@@ -65,7 +65,13 @@ jobs:
       - name: Analyze
         run: flutter analyze
 
-      - name: Build signed APK
+      - name: Build signed Play Store bundle
+        run: flutter build appbundle --release
+
+      - name: Verify AAB signature
+        run: jarsigner -verify -verbose -certs build/app/outputs/bundle/release/app-release.aab
+
+      - name: Also build signed APK for device testing
         run: flutter build apk --release
 
       - name: Verify APK signature
@@ -78,10 +84,17 @@ jobs:
           ZIPALIGN=$(find "$ANDROID_SDK_ROOT/build-tools" -name zipalign | sort -V | tail -1)
           "$ZIPALIGN" -c -P 16 -v 4 build/app/outputs/flutter-apk/app-release.apk
 
-      - name: Upload signed APK
+      - name: Package Play Store candidate
+        run: |
+          mkdir -p dist
+          cp build/app/outputs/bundle/release/app-release.aab dist/PuzzleMix-v0.6.1-play.aab
+          cp build/app/outputs/flutter-apk/app-release.apk dist/PuzzleMix-v0.6.1-signed.apk
+          sha256sum dist/* > dist/SHA256SUMS.txt
+
+      - name: Upload Play Store candidate
         uses: actions/upload-artifact@v4
         with:
-          name: PuzzleMix-Signed-APK
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: PuzzleMix-Play-Store-v0.6.1
+          path: dist/
           if-no-files-found: error
           retention-days: 30

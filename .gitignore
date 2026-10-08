@@ -3,22 +3,23 @@
 .packages
 .pub/
 build/
-.flutter-plugins
-.flutter-plugins-dependencies
-.pub-cache/
 
-# Android
-android/.gradle/
-android/local.properties
-android/app/debug/
-android/app/profile/
-android/app/release/
+# Generated platform shells
+android/
+ios/
 
-# IDE
+# Local signing material — NEVER COMMIT
+*.jks
+*.keystore
+key.properties
+signing.properties
+*.p12
+*.pem
+
+# Generated game audio
+assets/sounds/
+
+# IDE/system
 .idea/
 .vscode/
-*.iml
-
-# OS
 .DS_Store
-Thumbs.db

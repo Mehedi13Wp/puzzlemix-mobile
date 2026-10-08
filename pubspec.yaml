@@ -1,7 +1,7 @@
 name: puzzlemix_mobile
-description: A lightweight multi-puzzle casual Android game.
+description: PuzzleMix is a polished casual puzzle game featuring Fruit Sort Deluxe, Arrow Escape, and Color Crew.
 publish_to: "none"
-version: 0.6.0+7
+version: 0.6.1+8
 
 environment:
   sdk: ">=3.4.0 <4.0.0"

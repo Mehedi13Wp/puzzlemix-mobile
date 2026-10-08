@@ -8,6 +8,7 @@ import 'arrow_escape.dart';
 import 'color_crew.dart';
 import 'color_sort_fx.dart';
 import 'sound_manager.dart';
+import 'privacy_policy.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -290,14 +291,30 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 12),
                       Align(
                         alignment: Alignment.centerRight,
-                        child: AnimatedBuilder(
-                          animation: SoundManager.instance,
-                          builder: (_, __) => _RoundIconButton(
-                            icon: SoundManager.instance.enabled
-                                ? Icons.volume_up_rounded
-                                : Icons.volume_off_rounded,
-                            onTap: () => SoundManager.instance.toggle(),
-                          ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _RoundIconButton(
+                              icon: Icons.privacy_tip_outlined,
+                              onTap: () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      const PrivacyPolicyScreen(),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            AnimatedBuilder(
+                              animation: SoundManager.instance,
+                              builder: (_, __) => _RoundIconButton(
+                                icon: SoundManager.instance.enabled
+                                    ? Icons.volume_up_rounded
+                                    : Icons.volume_off_rounded,
+                                onTap: () =>
+                                    SoundManager.instance.toggle(),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -354,7 +371,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 28),
                     const Center(
                       child: Text(
-                        'PuzzleMix v0.6.0  •  Ultra Professional Fruity Edition',
+                        'PuzzleMix v0.6.1  •  Play Store Candidate',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Color(0xFF8FC39B),
