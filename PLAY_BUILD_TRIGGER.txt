@@ -13,3 +13,5 @@ Retry after corrected PLAY_UPLOAD_KEYSTORE_BASE64 secret: 2026-10-09
 
 
 Retry after Gradle Kotlin signing-import fix: 2026-10-09
+
+Retry after correcting both password secrets: 2026-10-09 12:17 BDT
