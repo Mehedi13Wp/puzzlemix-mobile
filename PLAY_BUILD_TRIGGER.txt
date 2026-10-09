@@ -7,3 +7,6 @@ Do not place passwords, keystore data, or secret values in this file.
 
 
 Trigger after signing secrets setup: 2026-10-09 final signed candidate
+
+
+Retry after corrected PLAY_UPLOAD_KEYSTORE_BASE64 secret: 2026-10-09
