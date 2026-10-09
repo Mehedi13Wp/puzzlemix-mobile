@@ -720,6 +720,7 @@ class RealisticTube extends StatelessWidget {
   final bool selected;
   final bool pouringOut;
   final bool pouringIn;
+  final bool celebrate;
   final int? incomingFruit;
   final VoidCallback onTap;
 
@@ -731,6 +732,7 @@ class RealisticTube extends StatelessWidget {
     required this.selected,
     required this.pouringOut,
     required this.pouringIn,
+    this.celebrate = false,
     this.incomingFruit,
     required this.onTap,
   });
@@ -748,8 +750,12 @@ class RealisticTube extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedScale(
-        scale: pouringIn ? 1.075 : (selected ? 1.035 : 1),
-        duration: const Duration(milliseconds: 220),
+        scale: celebrate
+            ? 1.11
+            : pouringIn
+                ? 1.075
+                : (selected ? 1.035 : 1),
+        duration: const Duration(milliseconds: 260),
         curve: Curves.easeOutBack,
         child: AnimatedRotation(
           turns: pouringOut ? .042 : 0,
@@ -768,7 +774,7 @@ class RealisticTube extends StatelessWidget {
                   clipBehavior: Clip.none,
                   alignment: Alignment.center,
                   children: [
-                    if (solved)
+                    if (solved || celebrate)
                       Positioned.fill(
                         child: Container(
                           decoration: BoxDecoration(
@@ -776,15 +782,15 @@ class RealisticTube extends StatelessWidget {
                             boxShadow: [
                               BoxShadow(
                                 color: const Color(0xFFFFD15B)
-                                    .withValues(alpha: .42),
-                                blurRadius: 30,
-                                spreadRadius: 6,
+                                    .withValues(alpha: celebrate ? .62 : .42),
+                                blurRadius: celebrate ? 38 : 30,
+                                spreadRadius: celebrate ? 10 : 6,
                               ),
                               BoxShadow(
                                 color: const Color(0xFF68E589)
-                                    .withValues(alpha: .28),
-                                blurRadius: 38,
-                                spreadRadius: 8,
+                                    .withValues(alpha: celebrate ? .42 : .28),
+                                blurRadius: celebrate ? 46 : 38,
+                                spreadRadius: celebrate ? 12 : 8,
                               ),
                             ],
                           ),
@@ -813,8 +819,10 @@ class RealisticTube extends StatelessWidget {
                         border: Border.all(
                           color: selected
                               ? const Color(0xFFB9FF9A)
-                              : Colors.white.withValues(alpha: .62),
-                          width: selected ? 3.0 : 2.0,
+                              : pouringIn
+                                  ? const Color(0xFFFFD25F)
+                                  : Colors.white.withValues(alpha: .62),
+                          width: selected || pouringIn ? 3.0 : 2.0,
                         ),
                         boxShadow: [
                           BoxShadow(
@@ -966,6 +974,45 @@ class RealisticTube extends StatelessWidget {
                           child: FruitToken(
                             fruitId: incomingFruit!,
                             size: 36,
+                          ),
+                        ),
+                      ),
+                    if (celebrate)
+                      Positioned(
+                        top: -42,
+                        child: TweenAnimationBuilder<double>(
+                          tween: Tween<double>(begin: .75, end: 1),
+                          duration: const Duration(milliseconds: 340),
+                          curve: Curves.easeOutBack,
+                          builder: (_, value, child) => Transform.scale(
+                            scale: value,
+                            child: child,
+                          ),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFD25F),
+                              borderRadius: BorderRadius.circular(999),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFFFFD25F)
+                                      .withValues(alpha: .30),
+                                  blurRadius: 14,
+                                ),
+                              ],
+                            ),
+                            child: const Text(
+                              'PERFECT MATCH',
+                              style: TextStyle(
+                                color: Color(0xFF21472C),
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: .5,
+                              ),
+                            ),
                           ),
                         ),
                       ),
