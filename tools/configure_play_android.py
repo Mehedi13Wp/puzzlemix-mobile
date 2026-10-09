@@ -38,11 +38,15 @@ text = re.sub(
 )
 
 if not skip_signing:
+    required_imports = "import java.io.FileInputStream\nimport java.util.Properties\n\n"
+    if "import java.util.Properties" not in text:
+        text = required_imports + text
+
     release_signing = """    signingConfigs {
         create("release") {
-            val keyProperties = java.util.Properties()
+            val keyProperties = Properties()
             val keyPropertiesFile = rootProject.file("key.properties")
-            keyProperties.load(java.io.FileInputStream(keyPropertiesFile))
+            keyProperties.load(FileInputStream(keyPropertiesFile))
             keyAlias = keyProperties["keyAlias"] as String
             keyPassword = keyProperties["keyPassword"] as String
             storeFile = file(keyProperties["storeFile"] as String)
