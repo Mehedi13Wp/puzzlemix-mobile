@@ -1368,6 +1368,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
   bool isPouring = false;
   int? pouringFrom;
   int? pouringTo;
+  int? celebrationTube;
 
   @override
   void initState() {
@@ -1388,6 +1389,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     isPouring = false;
     pouringFrom = null;
     pouringTo = null;
+    celebrationTube = null;
   }
 
   Future<void> _loadCoins() async {
@@ -1549,6 +1551,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     if (targetSolved) {
       SoundManager.instance.match();
       HapticFeedback.mediumImpact();
+      setState(() => celebrationTube = index);
     }
 
     await Future<void>.delayed(const Duration(milliseconds: 360));
@@ -1558,6 +1561,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
       isPouring = false;
       pouringFrom = null;
       pouringTo = null;
+      celebrationTube = null;
     });
 
     if (_isSolved()) {
@@ -1633,6 +1637,8 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
 
   void _undo() {
     if (history.isEmpty || finished) return;
+    SoundManager.instance.tap();
+    HapticFeedback.selectionClick();
     final last = history.removeLast();
     setState(() {
       tubes = last.tubes.map((e) => List<int>.from(e)).toList();
@@ -1642,6 +1648,8 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
   }
 
   void _restart() {
+    SoundManager.instance.tap();
+    HapticFeedback.mediumImpact();
     setState(_resetBoard);
   }
 
@@ -1765,19 +1773,16 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
         dark: true,
         child: Column(
           children: [
-            const SizedBox(height: 14),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                'Tap a jar, then move fruit onto the same fruit or an empty jar.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Color(0xFFE4F6E7),
-                  fontWeight: FontWeight.w700,
-                ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: _MoveStatusBanner(
+                moves: moves,
+                par: widget.level.par,
+                selected: selected != null,
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             Expanded(
               child: Center(
                 child: SingleChildScrollView(
@@ -1798,6 +1803,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
                         selected: selected == index,
                         pouringOut: pouringFrom == index,
                         pouringIn: pouringTo == index,
+                        celebrate: celebrationTube == index,
                         incomingFruit: pouringTo == index &&
                                 pouringFrom != null &&
                                 tubes[pouringFrom!].isNotEmpty
@@ -1860,6 +1866,115 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _MoveStatusBanner extends StatelessWidget {
+  final int moves;
+  final int par;
+  final bool selected;
+
+  const _MoveStatusBanner({
+    required this.moves,
+    required this.par,
+    required this.selected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final remaining = par - moves;
+    final onPace = remaining >= 0;
+    final accent = selected
+        ? const Color(0xFFFFD25F)
+        : onPace
+            ? const Color(0xFF7AF0A6)
+            : const Color(0xFFFF9B7A);
+
+    final message = selected
+        ? 'Now choose a matching or empty jar'
+        : onPace
+            ? (remaining == 0
+                ? 'Par move reached — finish strong'
+                : '$remaining moves left for a perfect clear')
+            : '${moves - par} over par — keep sorting';
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0A4327).withValues(alpha: .88),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: accent.withValues(alpha: .24)),
+        boxShadow: [
+          BoxShadow(
+            color: accent.withValues(alpha: .07),
+            blurRadius: 18,
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 220),
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(
+              color: accent.withValues(alpha: .13),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(
+              selected
+                  ? Icons.touch_app_rounded
+                  : onPace
+                      ? Icons.local_fire_department_rounded
+                      : Icons.flag_rounded,
+              color: accent,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 11),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  selected ? 'Fruit selected' : 'Move rhythm',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  message,
+                  style: const TextStyle(
+                    color: Color(0xFFAED5B8),
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: .14),
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              '$moves / $par',
+              style: TextStyle(
+                color: accent,
+                fontSize: 11,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
