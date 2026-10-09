@@ -186,6 +186,10 @@ class _HomeScreenState extends State<HomeScreen> {
   int stars = 0;
   int highestLevel = 1;
 
+  int get playerLevel => 1 + (stars ~/ 12);
+  int get xpCurrent => stars % 12;
+  int get xpTarget => 12;
+
   @override
   void initState() {
     super.initState();
@@ -246,31 +250,59 @@ class _HomeScreenState extends State<HomeScreen> {
             slivers: [
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(18, 18, 18, 8),
+                  padding: const EdgeInsets.fromLTRB(18, 16, 18, 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          const Expanded(
+                          Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'PuzzleMix',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 34,
-                                    fontWeight: FontWeight.w900,
-                                    letterSpacing: -.8,
-                                  ),
+                                Row(
+                                  children: [
+                                    Container(
+                                      width: 38,
+                                      height: 38,
+                                      decoration: BoxDecoration(
+                                        gradient: const LinearGradient(
+                                          colors: [
+                                            Color(0xFFFFD25F),
+                                            Color(0xFFFFA62E),
+                                          ],
+                                        ),
+                                        borderRadius: BorderRadius.circular(12),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: const Color(0xFFFFB83E)
+                                                .withValues(alpha: .22),
+                                            blurRadius: 16,
+                                          ),
+                                        ],
+                                      ),
+                                      child: const Center(
+                                        child: FruitToken(fruitId: 5, size: 29),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    const Text(
+                                      'PuzzleMix',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 31,
+                                        fontWeight: FontWeight.w900,
+                                        letterSpacing: -.8,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                SizedBox(height: 3),
-                                Text(
-                                  'Relax. Match. Enjoy.',
+                                const SizedBox(height: 5),
+                                const Text(
+                                  'Your cozy puzzle garden',
                                   style: TextStyle(
                                     color: Color(0xFFBFE7C8),
-                                    fontSize: 14,
+                                    fontSize: 13.5,
                                     fontWeight: FontWeight.w700,
                                   ),
                                 ),
@@ -288,36 +320,45 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _RoundIconButton(
-                              icon: Icons.privacy_tip_outlined,
-                              onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      const PrivacyPolicyScreen(),
+                      const SizedBox(height: 14),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _PlayerProgressCard(
+                              level: playerLevel,
+                              xp: xpCurrent,
+                              target: xpTarget,
+                              highestLevel: highestLevel,
+                            ),
+                          ),
+                          const SizedBox(width: 9),
+                          Column(
+                            children: [
+                              _RoundIconButton(
+                                icon: Icons.privacy_tip_outlined,
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        const PrivacyPolicyScreen(),
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            AnimatedBuilder(
-                              animation: SoundManager.instance,
-                              builder: (_, __) => _RoundIconButton(
-                                icon: SoundManager.instance.enabled
-                                    ? Icons.volume_up_rounded
-                                    : Icons.volume_off_rounded,
-                                onTap: () =>
-                                    SoundManager.instance.toggle(),
+                              const SizedBox(height: 8),
+                              AnimatedBuilder(
+                                animation: SoundManager.instance,
+                                builder: (_, __) => _RoundIconButton(
+                                  icon: SoundManager.instance.enabled
+                                      ? Icons.volume_up_rounded
+                                      : Icons.volume_off_rounded,
+                                  onTap: () =>
+                                      SoundManager.instance.toggle(),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 14),
                       _FruitHeroCard(
                         level: highestLevel,
                         onTap: _openLevels,
@@ -332,14 +373,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   delegate: SliverChildListDelegate([
                     const _SectionTitle(
                       title: 'Daily Harvest',
-                      subtitle: 'A fresh challenge every day',
+                      subtitle: 'One fresh challenge. One juicy reward.',
                     ),
                     const SizedBox(height: 11),
                     _DailyCard(onTap: _openDaily),
                     const SizedBox(height: 24),
                     const _SectionTitle(
                       title: 'Puzzle Collection',
-                      subtitle: 'Three ways to relax and play',
+                      subtitle: 'Pick a mood and jump right in',
                     ),
                     const SizedBox(height: 11),
                     _ModeCard(
@@ -371,7 +412,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 28),
                     const Center(
                       child: Text(
-                        'PuzzleMix v0.6.1  •  Play Store Candidate',
+                        'PuzzleMix  •  Relax. Match. Enjoy.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Color(0xFF8FC39B),
@@ -391,6 +432,121 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+class _PlayerProgressCard extends StatelessWidget {
+  final int level;
+  final int xp;
+  final int target;
+  final int highestLevel;
+
+  const _PlayerProgressCard({
+    required this.level,
+    required this.xp,
+    required this.target,
+    required this.highestLevel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final progress = target == 0 ? 0.0 : (xp / target).clamp(0.0, 1.0);
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: .075),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: .10),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .10),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 45,
+            height: 45,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [
+                  Color(0xFFB9F66B),
+                  Color(0xFF52D987),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Center(
+              child: Text(
+                level.toString(),
+                style: const TextStyle(
+                  color: Color(0xFF123B25),
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 11),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      'PLAYER LEVEL $level',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: .3,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      'Stage $highestLevel',
+                      style: const TextStyle(
+                        color: Color(0xFFA9D4B4),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(999),
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    minHeight: 7,
+                    backgroundColor: Colors.white.withValues(alpha: .10),
+                    valueColor: const AlwaysStoppedAnimation(
+                      Color(0xFFD6FF62),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  '$xp / $target stars to next level',
+                  style: const TextStyle(
+                    color: Color(0xFF91C29E),
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _FruitHeroCard extends StatelessWidget {
   final int level;
   final VoidCallback onTap;
@@ -402,99 +558,206 @@ class _FruitHeroCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            Color(0xFF0D522E),
-            Color(0xFF167743),
-            Color(0xFF1B8A4B),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(30),
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(30),
-        border: Border.all(
-          color: Colors.white.withValues(alpha: .13),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: .22),
-            blurRadius: 28,
-            offset: const Offset(0, 14),
-          ),
-        ],
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            right: -26,
-            top: -32,
-            child: Container(
-              width: 145,
-              height: 145,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: const Color(0xFFB8F36A).withValues(alpha: .10),
-              ),
+        child: Ink(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [
+                Color(0xFF0E4B2D),
+                Color(0xFF177A45),
+                Color(0xFF239752),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: .14),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .24),
+                blurRadius: 30,
+                offset: const Offset(0, 14),
+              ),
+              BoxShadow(
+                color: const Color(0xFF58D98C).withValues(alpha: .08),
+                blurRadius: 32,
+                spreadRadius: 2,
+              ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 19),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Row(
+          child: Stack(
+            children: [
+              Positioned(
+                right: -30,
+                top: -38,
+                child: Container(
+                  width: 165,
+                  height: 165,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xFFD6FF62).withValues(alpha: .10),
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 16,
+                top: 13,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: .16),
+                    borderRadius: BorderRadius.circular(999),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: .10),
+                    ),
+                  ),
+                  child: const Text(
+                    'FEATURED',
+                    style: TextStyle(
+                      color: Color(0xFFDFFF9C),
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: .8,
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 19),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    FruitToken(fruitId: 5, size: 48),
-                    SizedBox(width: 5),
-                    FruitToken(fruitId: 1, size: 48),
-                    SizedBox(width: 5),
-                    FruitToken(fruitId: 2, size: 48),
-                    SizedBox(width: 5),
-                    FruitToken(fruitId: 4, size: 48),
+                    const Row(
+                      children: [
+                        FruitToken(fruitId: 5, size: 48),
+                        SizedBox(width: 5),
+                        FruitToken(fruitId: 1, size: 48),
+                        SizedBox(width: 5),
+                        FruitToken(fruitId: 2, size: 48),
+                        SizedBox(width: 5),
+                        FruitToken(fruitId: 4, size: 48),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Fruit Sort Deluxe',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 26,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -.5,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    const Text(
+                      'Sort juicy fruit pieces into perfect matching jars.',
+                      style: TextStyle(
+                        color: Color(0xFFCBEAD3),
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 17),
+                    Row(
+                      children: [
+                        const _MiniFeature(
+                          icon: Icons.layers_rounded,
+                          text: '15 levels',
+                        ),
+                        const SizedBox(width: 8),
+                        const _MiniFeature(
+                          icon: Icons.auto_awesome_rounded,
+                          text: 'Zen play',
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 17),
+                    Container(
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFFFC34A)
+                                .withValues(alpha: .20),
+                            blurRadius: 18,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: FilledButton.icon(
+                        onPressed: onTap,
+                        style: FilledButton.styleFrom(
+                          backgroundColor: const Color(0xFFFFC34A),
+                          foregroundColor: const Color(0xFF173E28),
+                          minimumSize: const Size.fromHeight(56),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                        ),
+                        icon: const Icon(
+                          Icons.play_arrow_rounded,
+                          size: 29,
+                        ),
+                        label: Text(
+                          'CONTINUE  •  LEVEL $level',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: .3,
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Fruit Sort Deluxe',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 25,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -.4,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                const Text(
-                  'Sort juicy fruit pieces into perfect matching jars.',
-                  style: TextStyle(
-                    color: Color(0xFFCBEAD3),
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 18),
-                FilledButton.icon(
-                  onPressed: onTap,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFC34A),
-                    foregroundColor: const Color(0xFF173E28),
-                    minimumSize: const Size.fromHeight(54),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                  ),
-                  icon: const Icon(Icons.play_arrow_rounded, size: 28),
-                  label: Text(
-                    'CONTINUE  •  LEVEL ' + level.toString(),
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: .3,
-                    ),
-                  ),
-                ),
-              ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MiniFeature extends StatelessWidget {
+  final IconData icon;
+  final String text;
+
+  const _MiniFeature({
+    required this.icon,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: .085),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: Colors.white.withValues(alpha: .08),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: const Color(0xFFD8F7DF), size: 14),
+          const SizedBox(width: 5),
+          Text(
+            text,
+            style: const TextStyle(
+              color: Color(0xFFD8F7DF),
+              fontSize: 10.5,
+              fontWeight: FontWeight.w800,
             ),
           ),
         ],
@@ -620,73 +883,140 @@ class _DailyCard extends StatelessWidget {
     ];
 
     return Material(
-      color: const Color(0xFF0C4327).withValues(alpha: .93),
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(24),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(24),
-        child: Padding(
-          padding: const EdgeInsets.all(17),
-          child: Row(
-            children: [
-              Container(
-                width: 62,
-                height: 62,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [
-                      Color(0xFFFFD25F),
-                      Color(0xFFFFA62E),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(19),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFFFFB83E)
-                          .withValues(alpha: .24),
-                      blurRadius: 16,
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.auto_awesome_rounded,
-                  color: Color(0xFF21472C),
-                  size: 31,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Daily Harvest',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      now.day.toString() +
-                          ' ' +
-                          months[now.month - 1] +
-                          '  •  Par 24  •  +100 coins',
-                      style: const TextStyle(
-                        color: Color(0xFFA9D4B4),
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(
-                Icons.chevron_right_rounded,
-                color: Color(0xFFB7E2C1),
+        child: Ink(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [
+                Color(0xFF0B4227),
+                Color(0xFF105B34),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: const Color(0xFFFFD25F).withValues(alpha: .16),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .13),
+                blurRadius: 20,
+                offset: const Offset(0, 9),
               ),
             ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  width: 66,
+                  height: 66,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [
+                        Color(0xFFFFE27A),
+                        Color(0xFFFFA62E),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFFFFB83E)
+                            .withValues(alpha: .25),
+                        blurRadius: 18,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.auto_awesome_rounded,
+                    color: Color(0xFF21472C),
+                    size: 32,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          const Text(
+                            'Daily Harvest',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                          const SizedBox(width: 7),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 7,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFD25F)
+                                  .withValues(alpha: .14),
+                              borderRadius: BorderRadius.circular(999),
+                            ),
+                            child: const Text(
+                              '+100',
+                              style: TextStyle(
+                                color: Color(0xFFFFD25F),
+                                fontSize: 10,
+                                fontWeight: FontWeight.w900,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        now.day.toString() +
+                            ' ' +
+                            months[now.month - 1] +
+                            '  •  Par 24',
+                        style: const TextStyle(
+                          color: Color(0xFFB6DCC0),
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      const Text(
+                        'Complete today\'s special board',
+                        style: TextStyle(
+                          color: Color(0xFF86B895),
+                          fontSize: 11.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: .08),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.arrow_forward_rounded,
+                    color: Color(0xFFD6F3DD),
+                    size: 20,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -714,32 +1044,53 @@ class _ModeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: const Color(0xFF0B4025).withValues(alpha: .92),
-      borderRadius: BorderRadius.circular(22),
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(23),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(22),
-        child: Container(
-          padding: const EdgeInsets.all(16),
+        borderRadius: BorderRadius.circular(23),
+        child: Ink(
+          padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: .07),
+            gradient: const LinearGradient(
+              colors: [
+                Color(0xFF0B4025),
+                Color(0xFF0D4A2A),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
+            borderRadius: BorderRadius.circular(23),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: .075),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .10),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
           child: Row(
             children: [
               Container(
-                width: 52,
-                height: 52,
+                width: 56,
+                height: 56,
                 decoration: BoxDecoration(
                   color: accent.withValues(alpha: .13),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(18),
                   border: Border.all(
-                    color: accent.withValues(alpha: .22),
+                    color: accent.withValues(alpha: .28),
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: accent.withValues(alpha: .08),
+                      blurRadius: 14,
+                    ),
+                  ],
                 ),
-                child: Icon(icon, color: accent),
+                child: Icon(icon, color: accent, size: 28),
               ),
               const SizedBox(width: 13),
               Expanded(
@@ -754,23 +1105,39 @@ class _ModeCard extends StatelessWidget {
                         fontWeight: FontWeight.w900,
                       ),
                     ),
-                    const SizedBox(height: 3),
+                    const SizedBox(height: 4),
                     Text(
                       subtitle,
                       style: const TextStyle(
-                        color: Color(0xFF93BFA0),
-                        fontSize: 12.5,
+                        color: Color(0xFF9AC5A6),
+                        fontSize: 12.2,
+                        height: 1.25,
                       ),
                     ),
                   ],
                 ),
               ),
-              Text(
-                label,
-                style: TextStyle(
-                  color: accent,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 12,
+              const SizedBox(width: 9),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: accent.withValues(alpha: .12),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: accent.withValues(alpha: .20),
+                  ),
+                ),
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    color: accent,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 10.5,
+                    letterSpacing: .4,
+                  ),
                 ),
               ),
             ],
