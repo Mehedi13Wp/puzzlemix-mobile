@@ -1368,6 +1368,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
   bool isPouring = false;
   int? pouringFrom;
   int? pouringTo;
+  int? transferFruit;
   int? celebrationTube;
 
   @override
@@ -1389,6 +1390,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     isPouring = false;
     pouringFrom = null;
     pouringTo = null;
+    transferFruit = null;
     celebrationTube = null;
   }
 
@@ -1524,18 +1526,22 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     );
 
     final amount = _pourAmount(from, index);
+    final fruitId = tubes[from].last;
 
     SoundManager.instance.whoosh();
+    SoundManager.instance.pour();
     HapticFeedback.lightImpact();
 
     setState(() {
       isPouring = true;
       pouringFrom = from;
       pouringTo = index;
+      transferFruit = fruitId;
       selected = null;
     });
 
-    await Future<void>.delayed(const Duration(milliseconds: 220));
+    // Give the source jar time to lift/tilt and the fruit time to clear the rim.
+    await Future<void>.delayed(const Duration(milliseconds: 330));
     if (!mounted) return;
 
     setState(() {
@@ -1554,13 +1560,16 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
       setState(() => celebrationTube = index);
     }
 
-    await Future<void>.delayed(const Duration(milliseconds: 360));
+    await Future<void>.delayed(
+      Duration(milliseconds: targetSolved ? 680 : 430),
+    );
     if (!mounted) return;
 
     setState(() {
       isPouring = false;
       pouringFrom = null;
       pouringTo = null;
+      transferFruit = null;
       celebrationTube = null;
     });
 
@@ -1804,11 +1813,10 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
                         pouringOut: pouringFrom == index,
                         pouringIn: pouringTo == index,
                         celebrate: celebrationTube == index,
-                        incomingFruit: pouringTo == index &&
-                                pouringFrom != null &&
-                                tubes[pouringFrom!].isNotEmpty
-                            ? tubes[pouringFrom!].last
-                            : null,
+                        incomingFruit:
+                            pouringTo == index ? transferFruit : null,
+                        outgoingFruit:
+                            pouringFrom == index ? transferFruit : null,
                         onTap: () => _tapTube(index),
                       ),
                     ),
