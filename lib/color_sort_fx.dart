@@ -722,6 +722,7 @@ class RealisticTube extends StatelessWidget {
   final bool pouringIn;
   final bool celebrate;
   final int? incomingFruit;
+  final int? outgoingFruit;
   final VoidCallback onTap;
 
   const RealisticTube({
@@ -734,6 +735,7 @@ class RealisticTube extends StatelessWidget {
     required this.pouringIn,
     this.celebrate = false,
     this.incomingFruit,
+    this.outgoingFruit,
     required this.onTap,
   });
 
@@ -758,22 +760,63 @@ class RealisticTube extends StatelessWidget {
         duration: const Duration(milliseconds: 260),
         curve: Curves.easeOutBack,
         child: AnimatedRotation(
-          turns: pouringOut ? .042 : 0,
-          duration: const Duration(milliseconds: 240),
+          turns: pouringOut ? .052 : 0,
+          duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOutCubic,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 190),
-            transform: Matrix4.translationValues(
-              0,
-              selected ? -14 : 0,
-              0,
-            ),
+            duration: const Duration(milliseconds: 280),
+            curve: Curves.easeOutCubic,
+            transformAlignment: Alignment.center,
+            transform: Matrix4.identity()
+              ..setEntry(3, 2, .0016)
+              ..rotateY(
+                pouringOut
+                    ? .10
+                    : pouringIn
+                        ? -.055
+                        : selected
+                            ? -.035
+                            : 0,
+              )
+              ..rotateX(pouringIn ? -.025 : 0)
+              ..setTranslationRaw(
+                0,
+                selected
+                    ? -14
+                    : pouringOut
+                        ? -8
+                        : pouringIn
+                            ? -3
+                            : 0,
+                pouringIn ? 16 : (pouringOut ? 10 : 0),
+              ),
             child: Column(
               children: [
                 Stack(
                   clipBehavior: Clip.none,
                   alignment: Alignment.center,
                   children: [
+                    Positioned(
+                      bottom: -9,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 280),
+                        width: pouringIn || celebrate ? 66 : 54,
+                        height: pouringIn || celebrate ? 16 : 12,
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(
+                            alpha: pouringIn ? .28 : .20,
+                          ),
+                          borderRadius: BorderRadius.circular(999),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: .20),
+                              blurRadius: pouringIn ? 18 : 12,
+                              spreadRadius: pouringIn ? 2 : 0,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                     if (solved || celebrate)
                       Positioned.fill(
                         child: Container(
@@ -960,20 +1003,114 @@ class RealisticTube extends StatelessWidget {
                         ),
                       ),
                     ),
+                    if (pouringOut && outgoingFruit != null)
+                      Positioned(
+                        top: -17,
+                        child: TweenAnimationBuilder<double>(
+                          tween: Tween<double>(begin: 0, end: 1),
+                          duration: const Duration(milliseconds: 330),
+                          curve: Curves.easeOutCubic,
+                          builder: (_, t, child) {
+                            final lift = Curves.easeOutCubic.transform(t);
+                            final matrix = Matrix4.identity()
+                              ..setEntry(3, 2, .0025)
+                              ..rotateY(.55 * t)
+                              ..rotateZ(.18 * t);
+                            return Opacity(
+                              opacity: (1 - (t * .24)).clamp(0.0, 1.0),
+                              child: Transform.translate(
+                                offset: Offset(21 * t, -38 * lift),
+                                child: Transform(
+                                  alignment: Alignment.center,
+                                  transform: matrix,
+                                  child: Transform.scale(
+                                    scale: 1 + math.sin(t * math.pi) * .18,
+                                    child: child,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: .24),
+                                  blurRadius: 13,
+                                  offset: const Offset(0, 9),
+                                ),
+                              ],
+                            ),
+                            child: FruitToken(
+                              fruitId: outgoingFruit!,
+                              size: 38,
+                            ),
+                          ),
+                        ),
+                      ),
                     if (pouringIn && incomingFruit != null)
                       Positioned(
-                        top: -24,
+                        top: -45,
                         child: TweenAnimationBuilder<double>(
-                          tween: Tween<double>(begin: -22, end: 24),
-                          duration: const Duration(milliseconds: 310),
-                          curve: Curves.easeInCubic,
-                          builder: (_, y, child) => Transform.translate(
-                            offset: Offset(0, y),
-                            child: child,
+                          tween: Tween<double>(begin: 0, end: 1),
+                          duration: const Duration(milliseconds: 430),
+                          curve: Curves.easeInOutCubic,
+                          builder: (_, t, child) {
+                            final drop = Curves.easeInCubic.transform(t);
+                            final matrix = Matrix4.identity()
+                              ..setEntry(3, 2, .0025)
+                              ..rotateY(.65 * (1 - t))
+                              ..rotateZ(-.15 * (1 - t));
+                            return Transform.translate(
+                              offset: Offset(
+                                -22 * (1 - t),
+                                -4 + (62 * drop),
+                              ),
+                              child: Transform(
+                                alignment: Alignment.center,
+                                transform: matrix,
+                                child: Transform.scale(
+                                  scale: .78 + (.26 * t),
+                                  child: child,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFFFFD25F)
+                                      .withValues(alpha: .28),
+                                  blurRadius: 16,
+                                  spreadRadius: 2,
+                                ),
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: .22),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: FruitToken(
+                              fruitId: incomingFruit!,
+                              size: 38,
+                            ),
                           ),
-                          child: FruitToken(
-                            fruitId: incomingFruit!,
-                            size: 36,
+                        ),
+                      ),
+                    if (celebrate)
+                      Positioned.fill(
+                        child: IgnorePointer(
+                          child: TweenAnimationBuilder<double>(
+                            tween: Tween<double>(begin: 0, end: 1),
+                            duration: const Duration(milliseconds: 660),
+                            curve: Curves.easeOutCubic,
+                            builder: (_, progress, __) => CustomPaint(
+                              painter: _JarBurstPainter(progress),
+                            ),
                           ),
                         ),
                       ),
@@ -1067,6 +1204,61 @@ class RealisticTube extends StatelessWidget {
       ),
     );
   }
+}
+
+
+class _JarBurstPainter extends CustomPainter {
+  final double progress;
+
+  const _JarBurstPainter(this.progress);
+
+  static const _sparkColors = <Color>[
+    Color(0xFFFFD25F),
+    Color(0xFF83F0A7),
+    Color(0xFFFFFFFF),
+    Color(0xFFFF9E6D),
+  ];
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height * .48);
+    final ringPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3.2
+      ..color = const Color(0xFFFFD25F).withValues(
+        alpha: ((1 - progress) * .58).clamp(0.0, 1.0),
+      );
+
+    canvas.drawCircle(
+      center,
+      26 + (progress * 58),
+      ringPaint,
+    );
+
+    final random = math.Random(73);
+    for (int i = 0; i < 18; i++) {
+      final angle = (math.pi * 2 / 18) * i + random.nextDouble() * .18;
+      final distance = 20 + progress * (42 + random.nextDouble() * 36);
+      final point = Offset(
+        center.dx + math.cos(angle) * distance,
+        center.dy + math.sin(angle) * distance,
+      );
+      final fade = (1 - progress).clamp(0.0, 1.0);
+      final paint = Paint()
+        ..color = _sparkColors[i % _sparkColors.length]
+            .withValues(alpha: fade * .95);
+
+      canvas.drawCircle(
+        point,
+        2.2 + (i % 3) * .7,
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _JarBurstPainter oldDelegate) =>
+      oldDelegate.progress != progress;
 }
 
 class LevelCompleteCelebration extends StatefulWidget {
