@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:in_app_update/in_app_update.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'arrow_escape.dart';
@@ -185,6 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int coins = 200;
   int stars = 0;
   int highestLevel = 1;
+  bool _checkingPlayUpdate = false;
 
   int get playerLevel => 1 + (stars ~/ 12);
   int get xpCurrent => stars % 12;
@@ -196,7 +198,50 @@ class _HomeScreenState extends State<HomeScreen> {
     _load();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       SoundManager.instance.startBackground();
+      Future<void>.delayed(
+        const Duration(milliseconds: 900),
+        _checkForPlayUpdate,
+      );
     });
+  }
+
+  Future<void> _checkForPlayUpdate() async {
+    if (_checkingPlayUpdate || !mounted) return;
+    _checkingPlayUpdate = true;
+
+    try {
+      final info = await InAppUpdate.checkForUpdate();
+      if (!mounted) return;
+
+      final updateAvailable =
+          info.updateAvailability == UpdateAvailability.updateAvailable;
+
+      if (updateAvailable && info.immediateUpdateAllowed) {
+        await InAppUpdate.performImmediateUpdate();
+      } else if (updateAvailable && info.flexibleUpdateAllowed) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            duration: const Duration(seconds: 8),
+            content: const Text(
+              'A new PuzzleMix update is available on Google Play.',
+            ),
+            action: SnackBarAction(
+              label: 'UPDATE',
+              onPressed: () {
+                InAppUpdate.startFlexibleUpdate().then((_) async {
+                  await InAppUpdate.completeFlexibleUpdate();
+                }).catchError((_) {});
+              },
+            ),
+          ),
+        );
+      }
+    } catch (_) {
+      // In-app updates only work for builds installed through Google Play.
+      // Failing silently keeps sideload/debug builds usable.
+    } finally {
+      _checkingPlayUpdate = false;
+    }
   }
 
   Future<void> _load() async {
