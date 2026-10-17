@@ -1651,7 +1651,22 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
         alreadyRewarded: alreadyRewarded,
         onContinue: () {
           Navigator.of(context).pop();
-          Navigator.of(context).pop(true);
+
+          if (widget.daily) {
+            Navigator.of(context).pop(true);
+            return;
+          }
+
+          final nextIndex = levels.indexWhere((level) => level.id == widget.level.id) + 1;
+          if (nextIndex > 0 && nextIndex < levels.length) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (_) => ColorSortScreen(level: levels[nextIndex]),
+              ),
+            );
+          } else {
+            Navigator.of(context).pop(true);
+          }
         },
       ),
     );
