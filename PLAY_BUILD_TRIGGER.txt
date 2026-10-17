@@ -19,3 +19,5 @@ Retry after correcting both password secrets: 2026-10-09 12:17 BDT
 Trigger v0.6.2+9 signed Closed Testing build
 
 Trigger v0.6.3+10 signed Closed Testing update build
+
+Trigger v0.6.4+11 signed Closed Testing update build
