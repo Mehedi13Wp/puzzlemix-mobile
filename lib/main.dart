@@ -142,6 +142,15 @@ class PuzzleLevel {
 
 const int tubeCapacity = 4;
 
+bool isFruitSortSolved(List<List<int>> tubes) {
+  for (final tube in tubes) {
+    if (tube.isEmpty) continue;
+    if (tube.length != tubeCapacity) return false;
+    if (tube.any((fruit) => fruit != tube.first)) return false;
+  }
+  return true;
+}
+
 const gameColors = <Color>[
   Color(0xFFFFD43B),
   Color(0xFFFF922B),
@@ -1590,20 +1599,50 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     }
   }
 
-  bool _isSolved() {
-    for (final tube in tubes) {
-      if (tube.isEmpty) continue;
-      if (tube.length != tubeCapacity) return false;
-      if (tube.any((c) => c != tube.first)) return false;
+  bool _isSolved() => isFruitSortSolved(tubes);
+
+  Future<void> _persistLevelCompletion({
+    required String completionKey,
+    required int stars,
+  }) async {
+    try {
+      final prefs = await SharedPreferences.getInstance()
+          .timeout(const Duration(seconds: 3));
+
+      final alreadyRewarded = prefs.getBool(completionKey) ?? false;
+      if (!alreadyRewarded) {
+        final reward = widget.daily ? 100 : 20 + (stars * 5);
+        final newCoins = (prefs.getInt('coins') ?? 200) + reward;
+        final newStars = (prefs.getInt('stars') ?? 0) + stars;
+
+        await prefs.setInt('coins', newCoins);
+        await prefs.setInt('stars', newStars);
+        await prefs.setBool(completionKey, true);
+
+        if (!widget.daily) {
+          final highest = prefs.getInt('highest_level') ?? 1;
+          if (widget.level.id >= highest && widget.level.id < levels.length) {
+            await prefs.setInt('highest_level', widget.level.id + 1);
+          }
+        }
+      }
+
+      if (!mounted) return;
+      final savedCoins = prefs.getInt('coins') ?? coins;
+      if (savedCoins != coins) {
+        setState(() => coins = savedCoins);
+      }
+    } catch (_) {
+      // Persistence must never block the win dialog or next-level navigation.
     }
-    return true;
   }
 
   Future<void> _finishLevel() async {
     if (finished) return;
+
+    // Lock gameplay immediately. The win UI must not depend on storage/audio.
     finished = true;
 
-    final prefs = await SharedPreferences.getInstance();
     final stars = moves <= widget.level.par
         ? 3
         : moves <= widget.level.par + 5
@@ -1615,31 +1654,37 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
         'daily_done_${date.year}_${date.month}_${date.day}';
     final completionKey =
         widget.daily ? dailyKey : 'level_done_${widget.level.id}';
-    final alreadyRewarded = prefs.getBool(completionKey) ?? false;
 
-    int reward = 0;
-    if (!alreadyRewarded) {
-      reward = widget.daily ? 100 : 20 + (stars * 5);
-      final newCoins = (prefs.getInt('coins') ?? 200) + reward;
-      final newStars = (prefs.getInt('stars') ?? 0) + stars;
-      await prefs.setInt('coins', newCoins);
-      await prefs.setInt('stars', newStars);
-      await prefs.setBool(completionKey, true);
-
-      if (!widget.daily) {
-        final highest = prefs.getInt('highest_level') ?? 1;
-        if (widget.level.id >= highest && widget.level.id < levels.length) {
-          await prefs.setInt('highest_level', widget.level.id + 1);
-        }
-      }
+    bool alreadyRewarded = false;
+    try {
+      final prefs = await SharedPreferences.getInstance()
+          .timeout(const Duration(milliseconds: 400));
+      alreadyRewarded = prefs.getBool(completionKey) ?? false;
+    } catch (_) {
+      // Fall back to showing the completion UI immediately.
     }
 
-    if (!mounted) return;
-    await _loadCoins();
-    SoundManager.instance.success();
-    HapticFeedback.heavyImpact();
+    final reward =
+        alreadyRewarded ? 0 : (widget.daily ? 100 : 20 + (stars * 5));
 
-    showDialog<void>(
+    if (!mounted) return;
+
+    // Save in the background so a slow preference write can never hide the win.
+    unawaited(
+      _persistLevelCompletion(
+        completionKey: completionKey,
+        stars: stars,
+      ),
+    );
+
+    try {
+      SoundManager.instance.success();
+      HapticFeedback.heavyImpact();
+    } catch (_) {
+      // Audio/haptics are optional and must never block completion.
+    }
+
+    await showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (_) => LevelCompleteCelebration(
@@ -1656,7 +1701,8 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
             return;
           }
 
-          final nextIndex = levels.indexWhere((level) => level.id == widget.level.id) + 1;
+          final nextIndex =
+              levels.indexWhere((level) => level.id == widget.level.id) + 1;
           if (nextIndex > 0 && nextIndex < levels.length) {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
