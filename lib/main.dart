@@ -1539,22 +1539,20 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     );
 
     final amount = _pourAmount(from, index);
-    final fruitId = tubes[from].last;
 
     SoundManager.instance.whoosh();
-    SoundManager.instance.pour();
     HapticFeedback.lightImpact();
 
     setState(() {
       isPouring = true;
       pouringFrom = from;
       pouringTo = index;
-      transferFruit = fruitId;
+      transferFruit = tubes[from].last;
       selected = null;
     });
 
-    // Give the source jar time to lift/tilt and the fruit time to clear the rim.
-    await Future<void>.delayed(const Duration(milliseconds: 330));
+    // Stable gameplay timing from the last known-good completion flow.
+    await Future<void>.delayed(const Duration(milliseconds: 220));
     if (!mounted) return;
 
     setState(() {
@@ -1573,9 +1571,10 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
       setState(() => celebrationTube = index);
     }
 
-    await Future<void>.delayed(
-      Duration(milliseconds: targetSolved ? 680 : 430),
-    );
+    // Check the board from the updated game state before clearing animation flags.
+    final boardSolved = _isSolved();
+
+    await Future<void>.delayed(const Duration(milliseconds: 360));
     if (!mounted) return;
 
     setState(() {
@@ -1586,7 +1585,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
       celebrationTube = null;
     });
 
-    if (_isSolved()) {
+    if (boardSolved) {
       await _finishLevel();
     }
   }
