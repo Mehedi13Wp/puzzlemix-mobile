@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -10,10 +11,22 @@ import 'color_sort_fx.dart';
 import 'sound_manager.dart';
 import 'privacy_policy.dart';
 
-Future<void> main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await SoundManager.instance.initialize();
   runApp(const PuzzleMixApp());
+
+  // Never block the first Flutter frame on audio/preferences startup.
+  unawaited(_initializeOptionalServices());
+}
+
+Future<void> _initializeOptionalServices() async {
+  try {
+    await SoundManager.instance
+        .initialize()
+        .timeout(const Duration(seconds: 2));
+  } catch (_) {
+    // The game must still open even if audio/preferences initialization fails.
+  }
 }
 
 class PuzzleMixApp extends StatelessWidget {
