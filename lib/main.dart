@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -11,22 +10,10 @@ import 'color_sort_fx.dart';
 import 'sound_manager.dart';
 import 'privacy_policy.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await SoundManager.instance.initialize();
   runApp(const PuzzleMixApp());
-
-  // Never block the first Flutter frame on audio/preferences startup.
-  unawaited(_initializeOptionalServices());
-}
-
-Future<void> _initializeOptionalServices() async {
-  try {
-    await SoundManager.instance
-        .initialize()
-        .timeout(const Duration(seconds: 2));
-  } catch (_) {
-    // The game must still open even if audio/preferences initialization fails.
-  }
 }
 
 class PuzzleMixApp extends StatelessWidget {
@@ -323,7 +310,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           _StatPill(
-                            icon: Icons.toll_rounded,
+                            icon: Icons.monetization_on_rounded,
                             value: coins.toString(),
                           ),
                           const SizedBox(width: 6),
@@ -1381,7 +1368,6 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
   bool isPouring = false;
   int? pouringFrom;
   int? pouringTo;
-  int? transferFruit;
   int? celebrationTube;
 
   @override
@@ -1403,7 +1389,6 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     isPouring = false;
     pouringFrom = null;
     pouringTo = null;
-    transferFruit = null;
     celebrationTube = null;
   }
 
@@ -1547,11 +1532,9 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
       isPouring = true;
       pouringFrom = from;
       pouringTo = index;
-      transferFruit = tubes[from].last;
       selected = null;
     });
 
-    // Stable gameplay timing from the last known-good completion flow.
     await Future<void>.delayed(const Duration(milliseconds: 220));
     if (!mounted) return;
 
@@ -1571,9 +1554,6 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
       setState(() => celebrationTube = index);
     }
 
-    // Check the board from the updated game state before clearing animation flags.
-    final boardSolved = _isSolved();
-
     await Future<void>.delayed(const Duration(milliseconds: 360));
     if (!mounted) return;
 
@@ -1581,11 +1561,10 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
       isPouring = false;
       pouringFrom = null;
       pouringTo = null;
-      transferFruit = null;
       celebrationTube = null;
     });
 
-    if (boardSolved) {
+    if (_isSolved()) {
       await _finishLevel();
     }
   }
@@ -1650,29 +1629,14 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
         alreadyRewarded: alreadyRewarded,
         onContinue: () {
           Navigator.of(context).pop();
-
-          if (widget.daily) {
-            Navigator.of(context).pop(true);
-            return;
-          }
-
-          final nextIndex = levels.indexWhere((level) => level.id == widget.level.id) + 1;
-          if (nextIndex > 0 && nextIndex < levels.length) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (_) => ColorSortScreen(level: levels[nextIndex]),
-              ),
-            );
-          } else {
-            Navigator.of(context).pop(true);
-          }
+          Navigator.of(context).pop(true);
         },
       ),
     );
   }
 
   void _undo() {
-    if (history.isEmpty || finished || isPouring) return;
+    if (history.isEmpty || finished) return;
     SoundManager.instance.tap();
     HapticFeedback.selectionClick();
     final last = history.removeLast();
@@ -1684,14 +1648,13 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
   }
 
   void _restart() {
-    if (finished || isPouring) return;
     SoundManager.instance.tap();
     HapticFeedback.mediumImpact();
     setState(_resetBoard);
   }
 
   Future<void> _hint() async {
-    if (finished || isPouring) return;
+    if (finished) return;
     int from = -1;
     int to = -1;
 
@@ -1729,24 +1692,17 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     final newCoins = coins - cost;
     await prefs.setInt('coins', newCoins);
     if (!mounted) return;
-    setState(() {
-      coins = newCoins;
-      selected = from;
-    });
-    HapticFeedback.selectionClick();
+    setState(() => coins = newCoins);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        duration: const Duration(milliseconds: 1600),
-        content: Text(
-          'Hint ready: Jar ${from + 1} selected → tap Jar ${to + 1}',
-        ),
+        content: Text('Hint: Jar ${from + 1}  →  Jar ${to + 1}'),
       ),
     );
   }
 
   Future<void> _addVial() async {
-    if (finished || isPouring) return;
+    if (finished) return;
     if (tubes.length >= widget.level.tubes.length + 2) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Maximum 2 extra jars.')),
@@ -1775,9 +1731,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
   @override
   Widget build(BuildContext context) {
     final title = widget.daily ? 'Daily Harvest' : 'Level ${widget.level.id}';
-    return PopScope(
-      canPop: !isPouring,
-      child: Scaffold(
+    return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF073B21),
         foregroundColor: Colors.white,
@@ -1850,10 +1804,11 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
                         pouringOut: pouringFrom == index,
                         pouringIn: pouringTo == index,
                         celebrate: celebrationTube == index,
-                        incomingFruit:
-                            pouringTo == index ? transferFruit : null,
-                        outgoingFruit:
-                            pouringFrom == index ? transferFruit : null,
+                        incomingFruit: pouringTo == index &&
+                                pouringFrom != null &&
+                                tubes[pouringFrom!].isNotEmpty
+                            ? tubes[pouringFrom!].last
+                            : null,
                         onTap: () => _tapTube(index),
                       ),
                     ),
@@ -1884,7 +1839,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
                     child: _GameAction(
                       icon: Icons.add_box_rounded,
                       label: '+ Jar',
-                      small: '🪙50',
+                      small: '50',
                       onTap: _addVial,
                     ),
                   ),
@@ -1893,7 +1848,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
                     child: _GameAction(
                       icon: Icons.lightbulb_outline_rounded,
                       label: 'Hint',
-                      small: '🪙30',
+                      small: '30',
                       onTap: _hint,
                     ),
                   ),
@@ -1911,7 +1866,6 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
             ),
           ],
         ),
-      ),
       ),
     );
   }
