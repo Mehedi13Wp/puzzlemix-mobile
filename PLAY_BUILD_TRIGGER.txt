@@ -21,3 +21,5 @@ Trigger v0.6.2+9 signed Closed Testing build
 Trigger v0.6.3+10 signed Closed Testing update build
 
 Trigger v0.6.4+11 signed Closed Testing update build
+
+Trigger v0.6.5+12 startup crash hotfix build
