@@ -323,7 +323,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                           _StatPill(
-                            icon: Icons.monetization_on_rounded,
+                            icon: Icons.toll_rounded,
                             value: coins.toString(),
                           ),
                           const SizedBox(width: 6),
@@ -1673,7 +1673,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
   }
 
   void _undo() {
-    if (history.isEmpty || finished) return;
+    if (history.isEmpty || finished || isPouring) return;
     SoundManager.instance.tap();
     HapticFeedback.selectionClick();
     final last = history.removeLast();
@@ -1685,13 +1685,14 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
   }
 
   void _restart() {
+    if (finished || isPouring) return;
     SoundManager.instance.tap();
     HapticFeedback.mediumImpact();
     setState(_resetBoard);
   }
 
   Future<void> _hint() async {
-    if (finished) return;
+    if (finished || isPouring) return;
     int from = -1;
     int to = -1;
 
@@ -1729,17 +1730,24 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     final newCoins = coins - cost;
     await prefs.setInt('coins', newCoins);
     if (!mounted) return;
-    setState(() => coins = newCoins);
+    setState(() {
+      coins = newCoins;
+      selected = from;
+    });
+    HapticFeedback.selectionClick();
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Hint: Jar ${from + 1}  →  Jar ${to + 1}'),
+        duration: const Duration(milliseconds: 1600),
+        content: Text(
+          'Hint ready: Jar ${from + 1} selected → tap Jar ${to + 1}',
+        ),
       ),
     );
   }
 
   Future<void> _addVial() async {
-    if (finished) return;
+    if (finished || isPouring) return;
     if (tubes.length >= widget.level.tubes.length + 2) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Maximum 2 extra jars.')),
@@ -1768,7 +1776,9 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
   @override
   Widget build(BuildContext context) {
     final title = widget.daily ? 'Daily Harvest' : 'Level ${widget.level.id}';
-    return Scaffold(
+    return PopScope(
+      canPop: !isPouring,
+      child: Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF073B21),
         foregroundColor: Colors.white,
@@ -1875,7 +1885,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
                     child: _GameAction(
                       icon: Icons.add_box_rounded,
                       label: '+ Jar',
-                      small: '50',
+                      small: '🪙50',
                       onTap: _addVial,
                     ),
                   ),
@@ -1884,7 +1894,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
                     child: _GameAction(
                       icon: Icons.lightbulb_outline_rounded,
                       label: 'Hint',
-                      small: '30',
+                      small: '🪙30',
                       onTap: _hint,
                     ),
                   ),
@@ -1902,6 +1912,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }
