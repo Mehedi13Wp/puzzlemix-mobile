@@ -27,3 +27,5 @@ Trigger v0.6.5+12 startup crash hotfix build
 Trigger v0.6.6+13 non-blocking startup hotfix build
 Trigger v0.6.7+14 final gameplay controls and progression build
 Trigger v0.6.8+15 stable completion flow hotfix build
+
+Restore pre-2026-10-17 stable app code as v0.6.9+16
