@@ -44,8 +44,8 @@ jobs:
 
           gradle = Path("android/app/build.gradle.kts")
           text = gradle.read_text(encoding="utf-8")
-          text = re.sub(r'namespace\s*=\s*"[^"]+"',
-                        'namespace = "com.mehedi.puzzlemix.dev"', text, count=1)
+          # Keep namespace as com.mehedi.puzzlemix so generated MainActivity
+          # remains resolvable. Only applicationId changes install identity.
           text = re.sub(r'applicationId\s*=\s*"[^"]+"',
                         'applicationId = "com.mehedi.puzzlemix.dev"', text, count=1)
           gradle.write_text(text, encoding="utf-8")
