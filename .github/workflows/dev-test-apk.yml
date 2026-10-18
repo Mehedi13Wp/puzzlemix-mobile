@@ -1,0 +1,78 @@
+name: Build Dev Test APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/dev-test-apk.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Create Android shell for dev test app
+        run: |
+          rm -rf /tmp/puzzlemix_shell
+          flutter create /tmp/puzzlemix_shell \
+            --platforms=android \
+            --project-name=puzzlemix \
+            --org=com.mehedi \
+            --no-pub
+          cp -R /tmp/puzzlemix_shell/android ./android
+
+      - name: Use separate dev package
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          gradle = Path("android/app/build.gradle.kts")
+          text = gradle.read_text(encoding="utf-8")
+          text = re.sub(r'namespace\s*=\s*"[^"]+"',
+                        'namespace = "com.mehedi.puzzlemix.dev"', text, count=1)
+          text = re.sub(r'applicationId\s*=\s*"[^"]+"',
+                        'applicationId = "com.mehedi.puzzlemix.dev"', text, count=1)
+          gradle.write_text(text, encoding="utf-8")
+
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          m = manifest.read_text(encoding="utf-8")
+          m = re.sub(r'android:label="[^"]+"',
+                     'android:label="PuzzleMix DEV"', m, count=1)
+          manifest.write_text(m, encoding="utf-8")
+          PY
+
+      - name: Generate game sounds
+        run: python3 tools/generate_sounds.py
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Build installable dev APK
+        run: flutter build apk --debug
+
+      - name: Upload dev APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: PuzzleMix-DEV-APK
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+          retention-days: 30
