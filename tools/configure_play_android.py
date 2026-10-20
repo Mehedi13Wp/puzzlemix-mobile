@@ -89,6 +89,7 @@ if manifest.exists():
     manifest.write_text(m, encoding="utf-8")
 
 runpy.run_path(str(Path(__file__).with_name("apply_app_icon.py")))
+runpy.run_path(str(Path(__file__).with_name("apply_release_rules.py")))
 
 print("Configured Android for Google Play:")
 print(f"- package: {PACKAGE}")

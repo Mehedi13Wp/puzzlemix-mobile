@@ -1,6 +1,6 @@
 # PuzzleMix — Play Store Production Readiness
 
-**Candidate:** 0.6.10+17
+**Candidate:** 0.6.11+18
 **Permanent package ID:** `com.mehedi.puzzlemix`
 
 ## Source/build readiness

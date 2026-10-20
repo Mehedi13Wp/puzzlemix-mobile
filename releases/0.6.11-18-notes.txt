@@ -1,0 +1,4 @@
+<en-US>
+Fixed a startup issue affecting the Play Store release.
+Preserved saved progress and the new fruit artwork and animations.
+</en-US>
