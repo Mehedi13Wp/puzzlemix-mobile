@@ -57,6 +57,9 @@ jobs:
           manifest.write_text(m, encoding="utf-8")
           PY
 
+      - name: Apply PuzzleMix fruit icon
+        run: python3 tools/apply_app_icon.py
+
       - name: Generate game sounds
         run: python3 tools/generate_sounds.py
 

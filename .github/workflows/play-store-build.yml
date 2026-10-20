@@ -28,6 +28,20 @@ jobs:
       - name: Check Play Store readiness
         run: python3 tools/check_play_readiness.py
 
+      - name: Read release version
+        run: |
+          python3 - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+          version = re.search(r'^version:\s*(\d+\.\d+\.\d+)\+(\d+)', Path('pubspec.yaml').read_text(), re.M)
+          if not version:
+              raise SystemExit('Invalid release version')
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              output.write(f'RELEASE_VERSION={version.group(1)}\n')
+              output.write(f'RELEASE_CODE={version.group(2)}\n')
+          PY
+
       - name: Validate permanent signing secrets
         run: |
           test -n "$PLAY_UPLOAD_KEYSTORE_BASE64" || (echo "Missing PLAY_UPLOAD_KEYSTORE_BASE64" && exit 1)
@@ -39,6 +53,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: '3.47.7'
           cache: true
 
       - name: Create Play Store Android shell
@@ -72,6 +87,9 @@ jobs:
       - name: Analyze
         run: flutter analyze
 
+      - name: Test fruit transfer and completion
+        run: flutter test --no-pub
+
       - name: Build signed Play Store bundle
         run: flutter build appbundle --release
 
@@ -94,14 +112,16 @@ jobs:
       - name: Package Play Store candidate
         run: |
           mkdir -p dist
-          cp build/app/outputs/bundle/release/app-release.aab dist/PuzzleMix-v0.6.9-play.aab
-          cp build/app/outputs/flutter-apk/app-release.apk dist/PuzzleMix-v0.6.9-signed.apk
+          cp build/app/outputs/bundle/release/app-release.aab "dist/PuzzleMix-v${RELEASE_VERSION}-${RELEASE_CODE}-play.aab"
+          cp build/app/outputs/flutter-apk/app-release.apk "dist/PuzzleMix-v${RELEASE_VERSION}-${RELEASE_CODE}-signed.apk"
+          cp branding/store/puzzlemix-play-icon-512.png dist/
+          cp releases/0.6.10-17-notes.txt dist/
           sha256sum dist/* > dist/SHA256SUMS.txt
 
       - name: Upload Play Store candidate
         uses: actions/upload-artifact@v4
         with:
-          name: PuzzleMix-Play-Store-v0.6.9
+          name: PuzzleMix-Play-Store-v${{ env.RELEASE_VERSION }}-${{ env.RELEASE_CODE }}
           path: dist/
           if-no-files-found: error
           retention-days: 30

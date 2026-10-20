@@ -24,8 +24,7 @@ class PremiumFruitBackground extends StatefulWidget {
   });
 
   @override
-  State<PremiumFruitBackground> createState() =>
-      _PremiumFruitBackgroundState();
+  State<PremiumFruitBackground> createState() => _PremiumFruitBackgroundState();
 }
 
 class _PremiumFruitBackgroundState extends State<PremiumFruitBackground>
@@ -105,24 +104,19 @@ class _ForestPainter extends CustomPainter {
 
     for (int i = 0; i < 22; i++) {
       final phase = progress * tau + i * .61;
-      final x = (i * 73.0 + 24 + math.sin(phase) * 16) %
-              (size.width + 100) -
-          50;
-      final y = (i * 107.0 + 38 + math.cos(phase * .73) * 21) %
-              (size.height + 120) -
-          60;
+      final x =
+          (i * 73.0 + 24 + math.sin(phase) * 16) % (size.width + 100) - 50;
+      final y =
+          (i * 107.0 + 38 + math.cos(phase * .73) * 21) % (size.height + 120) -
+              60;
 
       canvas.save();
       canvas.translate(x, y);
       canvas.rotate(.35 + math.sin(phase) * .26);
       final leafPaint = Paint()
-        ..color = (dark
-                ? const Color(0xFF74D58C)
-                : const Color(0xFF287B43))
+        ..color = (dark ? const Color(0xFF74D58C) : const Color(0xFF287B43))
             .withValues(
-          alpha: dark
-              ? (i.isEven ? .085 : .045)
-              : (i.isEven ? .075 : .045),
+          alpha: dark ? (i.isEven ? .085 : .045) : (i.isEven ? .075 : .045),
         );
       canvas.drawOval(
         Rect.fromCenter(
@@ -140,10 +134,9 @@ class _ForestPainter extends CustomPainter {
     for (int i = 0; i < 6; i++) {
       final px = size.width * (.10 + (i * .17) % .82);
       final py = size.height * (.14 + ((i * 29) % 70) / 100);
-      bokeh.color = (i.isEven
-              ? const Color(0xFF9BEF87)
-              : const Color(0xFFFFD66B))
-          .withValues(alpha: dark ? .035 : .08);
+      bokeh.color =
+          (i.isEven ? const Color(0xFF9BEF87) : const Color(0xFFFFD66B))
+              .withValues(alpha: dark ? .035 : .08);
       canvas.drawCircle(
         Offset(
           px + math.sin(progress * tau + i) * 8,
@@ -190,8 +183,35 @@ class FruitToken extends StatelessWidget {
       child: SizedBox(
         width: size,
         height: size,
-        child: CustomPaint(
-          painter: _FruitPainter(id),
+        child: ClipRect(
+          child: OverflowBox(
+            alignment: Alignment.topLeft,
+            minWidth: size * 4,
+            maxWidth: size * 4,
+            minHeight: size * 2,
+            maxHeight: size * 2,
+            child: Transform.translate(
+              offset: Offset(-(id % 4) * size, -(id ~/ 4) * size),
+              child: Image.asset(
+                'assets/images/fruit-atlas.png',
+                width: size * 4,
+                height: size * 2,
+                fit: BoxFit.fill,
+                filterQuality: FilterQuality.medium,
+                excludeFromSemantics: true,
+                errorBuilder: (_, error, stackTrace) => Align(
+                  alignment: Alignment.topLeft,
+                  child: Transform.translate(
+                    offset: Offset((id % 4) * size, (id ~/ 4) * size),
+                    child: CustomPaint(
+                      painter: _FruitPainter(id),
+                      size: Size.square(size),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -722,6 +742,7 @@ class RealisticTube extends StatelessWidget {
   final bool pouringIn;
   final bool celebrate;
   final int? incomingFruit;
+  final int pourStep;
   final VoidCallback onTap;
 
   const RealisticTube({
@@ -734,12 +755,12 @@ class RealisticTube extends StatelessWidget {
     required this.pouringIn,
     this.celebrate = false,
     this.incomingFruit,
+    this.pourStep = 0,
     required this.onTap,
   });
 
   bool get solved =>
-      layers.length == 4 &&
-      layers.every((fruit) => fruit == layers.first);
+      layers.length == 4 && layers.every((fruit) => fruit == layers.first);
 
   @override
   Widget build(BuildContext context) {
@@ -851,8 +872,7 @@ class RealisticTube extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: List.generate(4, (visualIndex) {
                                 final layerIndex = 3 - visualIndex;
-                                final occupied =
-                                    layerIndex < layers.length;
+                                final occupied = layerIndex < layers.length;
                                 final fruitId =
                                     occupied ? layers[layerIndex] : -1;
 
@@ -866,9 +886,8 @@ class RealisticTube extends StatelessWidget {
                                           const Duration(milliseconds: 230),
                                       switchInCurve: Curves.elasticOut,
                                       switchOutCurve: Curves.easeInCubic,
-                                      transitionBuilder:
-                                          (child, animation) =>
-                                              ScaleTransition(
+                                      transitionBuilder: (child, animation) =>
+                                          ScaleTransition(
                                         scale: animation,
                                         child: FadeTransition(
                                           opacity: animation,
@@ -941,8 +960,7 @@ class RealisticTube extends StatelessWidget {
                           gradient: LinearGradient(
                             colors: [
                               Colors.white.withValues(alpha: .90),
-                              const Color(0xFFBCEFD0)
-                                  .withValues(alpha: .58),
+                              const Color(0xFFBCEFD0).withValues(alpha: .58),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(10),
@@ -964,9 +982,21 @@ class RealisticTube extends StatelessWidget {
                       Positioned(
                         top: -24,
                         child: TweenAnimationBuilder<double>(
-                          tween: Tween<double>(begin: -22, end: 24),
-                          duration: const Duration(milliseconds: 310),
-                          curve: Curves.easeInCubic,
+                          key: ValueKey(pourStep),
+                          tween: Tween<double>(
+                            begin: -22,
+                            end: jarHeight -
+                                9 -
+                                (layers.length + .5) * slotHeight +
+                                6,
+                          ),
+                          duration: Duration(
+                            milliseconds:
+                                MediaQuery.disableAnimationsOf(context)
+                                    ? 1
+                                    : 360,
+                          ),
+                          curve: Curves.easeInQuad,
                           builder: (_, y, child) => Transform.translate(
                             offset: Offset(0, y),
                             child: child,
@@ -974,6 +1004,18 @@ class RealisticTube extends StatelessWidget {
                           child: FruitToken(
                             fruitId: incomingFruit!,
                             size: 36,
+                          ),
+                        ),
+                      ),
+                    if (celebrate && !MediaQuery.disableAnimationsOf(context))
+                      Positioned.fill(
+                        child: IgnorePointer(
+                          child: TweenAnimationBuilder<double>(
+                            tween: Tween(begin: 0, end: 1),
+                            duration: const Duration(milliseconds: 900),
+                            builder: (context, progress, child) => CustomPaint(
+                              painter: _JarSparklePainter(progress),
+                            ),
                           ),
                         ),
                       ),
@@ -1044,8 +1086,7 @@ class RealisticTube extends StatelessWidget {
                   ),
                   decoration: BoxDecoration(
                     color: selected
-                        ? const Color(0xFFB9FF9A)
-                            .withValues(alpha: .16)
+                        ? const Color(0xFFB9FF9A).withValues(alpha: .16)
                         : Colors.black.withValues(alpha: .16),
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -1067,6 +1108,41 @@ class RealisticTube extends StatelessWidget {
       ),
     );
   }
+}
+
+class _JarSparklePainter extends CustomPainter {
+  final double progress;
+  const _JarSparklePainter(this.progress);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height * .45);
+    final fade = math.sin(progress * math.pi).clamp(0.0, 1.0);
+    for (int i = 0; i < 12; i++) {
+      final angle = i * math.pi / 6 - math.pi / 2;
+      final radius = 22 + progress * 65;
+      final point = center +
+          Offset(
+            math.cos(angle) * radius,
+            math.sin(angle) * radius,
+          );
+      final paint = Paint()
+        ..color = (i.isEven ? const Color(0xFFFFD25F) : const Color(0xFFB9FF9A))
+            .withValues(alpha: fade);
+      final starSize = (i.isEven ? 5.0 : 3.5) * (1 - progress * .45);
+      final path = Path()
+        ..moveTo(point.dx, point.dy - starSize)
+        ..lineTo(point.dx + starSize * .45, point.dy)
+        ..lineTo(point.dx, point.dy + starSize)
+        ..lineTo(point.dx - starSize * .45, point.dy)
+        ..close();
+      canvas.drawPath(path, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _JarSparklePainter oldDelegate) =>
+      progress != oldDelegate.progress;
 }
 
 class LevelCompleteCelebration extends StatefulWidget {
@@ -1092,8 +1168,7 @@ class LevelCompleteCelebration extends StatefulWidget {
       _LevelCompleteCelebrationState();
 }
 
-class _LevelCompleteCelebrationState
-    extends State<LevelCompleteCelebration>
+class _LevelCompleteCelebrationState extends State<LevelCompleteCelebration>
     with SingleTickerProviderStateMixin {
   late final AnimationController controller;
 
@@ -1190,8 +1265,7 @@ class _LevelCompleteCelebrationState
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: const Color(0xFFFFC34A)
-                              .withValues(alpha: .34),
+                          color: const Color(0xFFFFC34A).withValues(alpha: .34),
                           blurRadius: 24,
                           spreadRadius: 4,
                         ),
@@ -1336,9 +1410,7 @@ class _CelebrationPainter extends CustomPainter {
       final y = -18 + progress * (size.height + 88) * speed;
       final x = x0 + math.sin(progress * math.pi * 4 + i) * 13;
       final fade =
-          (1 - math.max(0, progress - .82) / .18)
-              .clamp(0.0, 1.0)
-              .toDouble();
+          (1 - math.max(0, progress - .82) / .18).clamp(0.0, 1.0).toDouble();
 
       final paint = Paint()
         ..color = colors[i % colors.length].withValues(alpha: fade);

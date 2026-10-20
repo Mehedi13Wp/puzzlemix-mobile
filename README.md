@@ -4,7 +4,7 @@ PuzzleMix is a Flutter casual puzzle collection built for Android and prepared f
 
 ## Current Play candidate
 
-- Version: **0.6.1+8**
+- Version: **0.6.10+17**
 - Permanent package ID: **com.mehedi.puzzlemix**
 - Target: **Android 16 / API 36**
 - Distribution build: **Android App Bundle (AAB)**

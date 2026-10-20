@@ -1,0 +1,7 @@
+<en-US>
+New fruit-themed PuzzleMix icon.
+Glossy fruit artwork inside the glass jars.
+Fruits now land one at a time with satisfying animations.
+Matching jars celebrate with glow and sparkles.
+Improved Undo and Restart handling during fruit transfers.
+</en-US>
