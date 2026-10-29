@@ -3,22 +3,41 @@ name: Build Dev Test APK
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
+      - "lib/**"
+      - "pubspec.yaml"
+      - "tools/**"
       - ".github/workflows/dev-test-apk.yml"
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: puzzlemix-dev-apk
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 40
+
+    env:
+      PLAY_UPLOAD_KEYSTORE_BASE64: ${{ secrets.PLAY_UPLOAD_KEYSTORE_BASE64 }}
+      PLAY_UPLOAD_STORE_PASSWORD: ${{ secrets.PLAY_UPLOAD_STORE_PASSWORD }}
+      PLAY_UPLOAD_KEY_PASSWORD: ${{ secrets.PLAY_UPLOAD_KEY_PASSWORD }}
+      PLAY_UPLOAD_KEY_ALIAS: ${{ secrets.PLAY_UPLOAD_KEY_ALIAS }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Validate stable signing secrets
+        run: |
+          test -n "$PLAY_UPLOAD_KEYSTORE_BASE64" || (echo "Missing PLAY_UPLOAD_KEYSTORE_BASE64" && exit 1)
+          test -n "$PLAY_UPLOAD_STORE_PASSWORD" || (echo "Missing PLAY_UPLOAD_STORE_PASSWORD" && exit 1)
+          test -n "$PLAY_UPLOAD_KEY_PASSWORD" || (echo "Missing PLAY_UPLOAD_KEY_PASSWORD" && exit 1)
+          test -n "$PLAY_UPLOAD_KEY_ALIAS" || (echo "Missing PLAY_UPLOAD_KEY_ALIAS" && exit 1)
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -26,7 +45,7 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Create Android shell for dev test app
+      - name: Create isolated Android DEV shell
         run: |
           rm -rf /tmp/puzzlemix_shell
           flutter create /tmp/puzzlemix_shell \
@@ -36,18 +55,25 @@ jobs:
             --no-pub
           cp -R /tmp/puzzlemix_shell/android ./android
 
-      - name: Use separate dev package
-        run: |
+          python3 tools/configure_play_android.py
+
           python3 - <<'PY'
           from pathlib import Path
           import re
 
           gradle = Path("android/app/build.gradle.kts")
           text = gradle.read_text(encoding="utf-8")
-          # Keep namespace as com.mehedi.puzzlemix so generated MainActivity
-          # remains resolvable. Only applicationId changes install identity.
-          text = re.sub(r'applicationId\s*=\s*"[^"]+"',
-                        'applicationId = "com.mehedi.puzzlemix.dev"', text, count=1)
+
+          # Keep namespace/MainActivity package unchanged.
+          # Only applicationId changes so DEV can coexist with Play Store app.
+          text, count = re.subn(
+              r'applicationId\s*=\s*"com\.mehedi\.puzzlemix"',
+              'applicationId = "com.mehedi.puzzlemix.dev"',
+              text,
+              count=1,
+          )
+          if count != 1:
+              raise SystemExit("Could not set DEV applicationId")
           gradle.write_text(text, encoding="utf-8")
 
           manifest = Path("android/app/src/main/AndroidManifest.xml")
@@ -57,11 +83,16 @@ jobs:
           manifest.write_text(m, encoding="utf-8")
           PY
 
-      - name: Apply PuzzleMix fruit icon
-        run: python3 tools/apply_app_icon.py
-
-      - name: Apply release JNI rules
-        run: python3 tools/apply_release_rules.py
+      - name: Restore permanent signing key
+        run: |
+          printf '%s' "$PLAY_UPLOAD_KEYSTORE_BASE64" | base64 --decode > android/app/puzzlemix-upload.jks
+          cat > android/key.properties <<EOF
+          storePassword=$PLAY_UPLOAD_STORE_PASSWORD
+          keyPassword=$PLAY_UPLOAD_KEY_PASSWORD
+          keyAlias=$PLAY_UPLOAD_KEY_ALIAS
+          storeFile=puzzlemix-upload.jks
+          EOF
+          chmod 600 android/app/puzzlemix-upload.jks android/key.properties
 
       - name: Generate game sounds
         run: python3 tools/generate_sounds.py
@@ -72,13 +103,39 @@ jobs:
       - name: Analyze
         run: flutter analyze
 
-      - name: Build installable dev APK
-        run: flutter build apk --debug
+      - name: Build stable signed DEV APK
+        run: flutter build apk --release
 
-      - name: Upload dev APK
+      - name: Verify APK signature
+        run: |
+          APKSIGNER=$(find "$ANDROID_SDK_ROOT/build-tools" -name apksigner | sort -V | tail -1)
+          "$APKSIGNER" verify --verbose --print-certs build/app/outputs/flutter-apk/app-release.apk
+
+      - name: Prepare direct-install APK
+        run: |
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-release.apk dist/PuzzleMix-DEV.apk
+          sha256sum dist/PuzzleMix-DEV.apk > dist/PuzzleMix-DEV.sha256
+
+      - name: Upload Actions artifact
         uses: actions/upload-artifact@v4
         with:
           name: PuzzleMix-DEV-APK
-          path: build/app/outputs/flutter-apk/app-debug.apk
+          path: dist/
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publish stable direct-download DEV release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: dev-latest
+          name: PuzzleMix DEV Latest
+          prerelease: true
+          allowUpdates: true
+          replacesArtifacts: true
+          removeArtifacts: true
+          artifacts: "dist/PuzzleMix-DEV.apk,dist/PuzzleMix-DEV.sha256"
+          body: |
+            Latest installable PuzzleMix DEV build.
+            Package: com.mehedi.puzzlemix.dev
+            Signed with the project's stable upload key so future DEV APKs can update in place.
