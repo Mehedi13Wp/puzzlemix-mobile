@@ -141,21 +141,130 @@ const gameColors = <Color>[
 ];
 
 final levels = <PuzzleLevel>[
-  const PuzzleLevel(id: 1, par: 6, tubes: [[0, 0, 0, 1], [1, 1, 0, 1], [], []]),
-  const PuzzleLevel(id: 2, par: 7, tubes: [[1, 1, 0, 0], [1, 0, 1, 0], [], []]),
-  const PuzzleLevel(id: 3, par: 10, tubes: [[0, 1, 0, 2], [1, 0, 0, 2], [1, 2, 2, 1], [], []]),
-  const PuzzleLevel(id: 4, par: 9, tubes: [[0, 2, 2, 1], [0, 1, 1, 2], [1, 2, 0, 0], [], []]),
-  const PuzzleLevel(id: 5, par: 8, tubes: [[2, 0, 0, 0], [1, 2, 0, 2], [1, 1, 1, 2], [], []]),
-  const PuzzleLevel(id: 6, par: 13, tubes: [[3, 2, 2, 0], [0, 1, 2, 3], [3, 1, 1, 2], [3, 1, 0, 0], [], []]),
-  const PuzzleLevel(id: 7, par: 15, tubes: [[2, 2, 3, 1], [2, 0, 3, 1], [3, 0, 2, 0], [3, 1, 0, 1], [], []]),
-  const PuzzleLevel(id: 8, par: 12, tubes: [[2, 2, 0, 2], [3, 3, 0, 1], [1, 2, 0, 1], [0, 3, 3, 1], [], []]),
-  const PuzzleLevel(id: 9, par: 18, tubes: [[1, 0, 3, 2], [4, 0, 2, 2], [3, 2, 1, 0], [0, 4, 1, 4], [4, 3, 1, 3], [], []]),
-  const PuzzleLevel(id: 10, par: 18, tubes: [[2, 3, 4, 3], [0, 0, 4, 1], [2, 0, 1, 4], [4, 3, 3, 1], [2, 1, 0, 2], [], []]),
-  const PuzzleLevel(id: 11, par: 17, tubes: [[4, 0, 3, 4], [1, 1, 1, 4], [3, 4, 0, 1], [2, 0, 3, 2], [0, 3, 2, 2], [], []]),
-  const PuzzleLevel(id: 12, par: 21, tubes: [[0, 4, 2, 4], [5, 1, 0, 3], [5, 5, 3, 3], [1, 0, 2, 2], [0, 2, 1, 4], [1, 3, 5, 4], [], []]),
-  const PuzzleLevel(id: 13, par: 20, tubes: [[2, 5, 3, 3], [1, 4, 5, 2], [4, 3, 0, 5], [2, 3, 4, 4], [1, 1, 0, 0], [0, 1, 2, 5], [], []]),
-  const PuzzleLevel(id: 14, par: 23, tubes: [[0, 3, 4, 1], [0, 5, 2, 1], [0, 1, 2, 2], [3, 4, 1, 5], [0, 4, 5, 4], [3, 3, 5, 2], [], []]),
-  const PuzzleLevel(id: 15, par: 21, tubes: [[5, 4, 2, 0], [4, 3, 0, 2], [4, 4, 1, 5], [1, 2, 1, 1], [5, 3, 5, 3], [3, 0, 0, 2], [], []]),
+  const PuzzleLevel(id: 1, par: 6, tubes: [
+    [0, 0, 0, 1],
+    [1, 1, 0, 1],
+    [],
+    []
+  ]),
+  const PuzzleLevel(id: 2, par: 7, tubes: [
+    [1, 1, 0, 0],
+    [1, 0, 1, 0],
+    [],
+    []
+  ]),
+  const PuzzleLevel(id: 3, par: 10, tubes: [
+    [0, 1, 0, 2],
+    [1, 0, 0, 2],
+    [1, 2, 2, 1],
+    [],
+    []
+  ]),
+  const PuzzleLevel(id: 4, par: 9, tubes: [
+    [0, 2, 2, 1],
+    [0, 1, 1, 2],
+    [1, 2, 0, 0],
+    [],
+    []
+  ]),
+  const PuzzleLevel(id: 5, par: 8, tubes: [
+    [2, 0, 0, 0],
+    [1, 2, 0, 2],
+    [1, 1, 1, 2],
+    [],
+    []
+  ]),
+  const PuzzleLevel(id: 6, par: 13, tubes: [
+    [3, 2, 2, 0],
+    [0, 1, 2, 3],
+    [3, 1, 1, 2],
+    [3, 1, 0, 0],
+    [],
+    []
+  ]),
+  const PuzzleLevel(id: 7, par: 15, tubes: [
+    [2, 2, 3, 1],
+    [2, 0, 3, 1],
+    [3, 0, 2, 0],
+    [3, 1, 0, 1],
+    [],
+    []
+  ]),
+  const PuzzleLevel(id: 8, par: 12, tubes: [
+    [2, 2, 0, 2],
+    [3, 3, 0, 1],
+    [1, 2, 0, 1],
+    [0, 3, 3, 1],
+    [],
+    []
+  ]),
+  const PuzzleLevel(id: 9, par: 18, tubes: [
+    [1, 0, 3, 2],
+    [4, 0, 2, 2],
+    [3, 2, 1, 0],
+    [0, 4, 1, 4],
+    [4, 3, 1, 3],
+    [],
+    []
+  ]),
+  const PuzzleLevel(id: 10, par: 18, tubes: [
+    [2, 3, 4, 3],
+    [0, 0, 4, 1],
+    [2, 0, 1, 4],
+    [4, 3, 3, 1],
+    [2, 1, 0, 2],
+    [],
+    []
+  ]),
+  const PuzzleLevel(id: 11, par: 17, tubes: [
+    [4, 0, 3, 4],
+    [1, 1, 1, 4],
+    [3, 4, 0, 1],
+    [2, 0, 3, 2],
+    [0, 3, 2, 2],
+    [],
+    []
+  ]),
+  const PuzzleLevel(id: 12, par: 21, tubes: [
+    [0, 4, 2, 4],
+    [5, 1, 0, 3],
+    [5, 5, 3, 3],
+    [1, 0, 2, 2],
+    [0, 2, 1, 4],
+    [1, 3, 5, 4],
+    [],
+    []
+  ]),
+  const PuzzleLevel(id: 13, par: 20, tubes: [
+    [2, 5, 3, 3],
+    [1, 4, 5, 2],
+    [4, 3, 0, 5],
+    [2, 3, 4, 4],
+    [1, 1, 0, 0],
+    [0, 1, 2, 5],
+    [],
+    []
+  ]),
+  const PuzzleLevel(id: 14, par: 23, tubes: [
+    [0, 3, 4, 1],
+    [0, 5, 2, 1],
+    [0, 1, 2, 2],
+    [3, 4, 1, 5],
+    [0, 4, 5, 4],
+    [3, 3, 5, 2],
+    [],
+    []
+  ]),
+  const PuzzleLevel(id: 15, par: 21, tubes: [
+    [5, 4, 2, 0],
+    [4, 3, 0, 2],
+    [4, 4, 1, 5],
+    [1, 2, 1, 1],
+    [5, 3, 5, 3],
+    [3, 0, 0, 2],
+    [],
+    []
+  ]),
 ];
 
 const dailyLevel = PuzzleLevel(
@@ -338,8 +447,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 icon: Icons.privacy_tip_outlined,
                                 onTap: () => Navigator.of(context).push(
                                   MaterialPageRoute(
-                                    builder: (_) =>
-                                        const PrivacyPolicyScreen(),
+                                    builder: (_) => const PrivacyPolicyScreen(),
                                   ),
                                 ),
                               ),
@@ -350,8 +458,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   icon: SoundManager.instance.enabled
                                       ? Icons.volume_up_rounded
                                       : Icons.volume_off_rounded,
-                                  onTap: () =>
-                                      SoundManager.instance.toggle(),
+                                  onTap: () => SoundManager.instance.toggle(),
                                 ),
                               ),
                             ],
@@ -686,8 +793,8 @@ class _FruitHeroCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFFFFC34A)
-                                .withValues(alpha: .20),
+                            color:
+                                const Color(0xFFFFC34A).withValues(alpha: .20),
                             blurRadius: 18,
                             offset: const Offset(0, 8),
                           ),
@@ -878,8 +985,18 @@ class _DailyCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final now = DateTime.now();
     const months = [
-      'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
-      'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'
+      'JAN',
+      'FEB',
+      'MAR',
+      'APR',
+      'MAY',
+      'JUN',
+      'JUL',
+      'AUG',
+      'SEP',
+      'OCT',
+      'NOV',
+      'DEC'
     ];
 
     return Material(
@@ -929,8 +1046,7 @@ class _DailyCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFFFB83E)
-                            .withValues(alpha: .25),
+                        color: const Color(0xFFFFB83E).withValues(alpha: .25),
                         blurRadius: 18,
                         offset: const Offset(0, 8),
                       ),
@@ -1236,8 +1352,7 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
                 child: GridView.builder(
                   physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(18, 12, 18, 28),
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     mainAxisSpacing: 12,
                     crossAxisSpacing: 12,
@@ -1264,20 +1379,17 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
                               : null,
                           color: unlocked
                               ? null
-                              : const Color(0xFF123521)
-                                  .withValues(alpha: .78),
+                              : const Color(0xFF123521).withValues(alpha: .78),
                           borderRadius: BorderRadius.circular(22),
                           border: Border.all(
                             color: unlocked
-                                ? const Color(0xFF4FAE69)
-                                    .withValues(alpha: .45)
+                                ? const Color(0xFF4FAE69).withValues(alpha: .45)
                                 : Colors.white.withValues(alpha: .06),
                           ),
                           boxShadow: unlocked
                               ? [
                                   BoxShadow(
-                                    color: Colors.black
-                                        .withValues(alpha: .16),
+                                    color: Colors.black.withValues(alpha: .16),
                                     blurRadius: 14,
                                     offset: const Offset(0, 8),
                                   ),
@@ -1369,6 +1481,9 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
   int? pouringFrom;
   int? pouringTo;
   int? celebrationTube;
+  int? pouringFruit;
+  int pourStep = 0;
+  int _boardGeneration = 0;
 
   @override
   void initState() {
@@ -1381,6 +1496,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
   }
 
   void _resetBoard() {
+    _boardGeneration++;
     tubes = widget.level.tubes.map((e) => List<int>.from(e)).toList();
     history.clear();
     moves = 0;
@@ -1390,6 +1506,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     pouringFrom = null;
     pouringTo = null;
     celebrationTube = null;
+    pouringFruit = null;
   }
 
   Future<void> _loadCoins() async {
@@ -1524,6 +1641,8 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     );
 
     final amount = _pourAmount(from, index);
+    final generation = _boardGeneration;
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
 
     SoundManager.instance.whoosh();
     HapticFeedback.lightImpact();
@@ -1532,19 +1651,29 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
       isPouring = true;
       pouringFrom = from;
       pouringTo = index;
+      pouringFruit = tubes[from].last;
+      pourStep++;
       selected = null;
     });
 
-    await Future<void>.delayed(const Duration(milliseconds: 220));
-    if (!mounted) return;
-
-    setState(() {
-      for (int i = 0; i < amount; i++) {
+    for (int i = 0; i < amount; i++) {
+      await Future<void>.delayed(
+        Duration(milliseconds: reduceMotion ? 30 : 360),
+      );
+      if (!mounted || generation != _boardGeneration) return;
+      setState(() {
         tubes[index].add(tubes[from].removeLast());
-      }
+        if (i + 1 < amount) {
+          pourStep++;
+        } else {
+          pouringFruit = null;
+        }
+      });
+      SoundManager.instance.pop();
+    }
+    setState(() {
       moves++;
     });
-    SoundManager.instance.pop();
 
     final targetSolved = tubes[index].length == tubeCapacity &&
         tubes[index].every((c) => c == tubes[index].first);
@@ -1554,14 +1683,17 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
       setState(() => celebrationTube = index);
     }
 
-    await Future<void>.delayed(const Duration(milliseconds: 360));
-    if (!mounted) return;
+    await Future<void>.delayed(
+      Duration(milliseconds: reduceMotion ? 30 : (targetSolved ? 950 : 260)),
+    );
+    if (!mounted || generation != _boardGeneration) return;
 
     setState(() {
       isPouring = false;
       pouringFrom = null;
       pouringTo = null;
       celebrationTube = null;
+      pouringFruit = null;
     });
 
     if (_isSolved()) {
@@ -1579,7 +1711,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
   }
 
   Future<void> _finishLevel() async {
-    if (finished) return;
+    if (finished || isPouring) return;
     finished = true;
 
     final prefs = await SharedPreferences.getInstance();
@@ -1590,8 +1722,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
             : 1;
 
     final date = DateTime.now();
-    final dailyKey =
-        'daily_done_${date.year}_${date.month}_${date.day}';
+    final dailyKey = 'daily_done_${date.year}_${date.month}_${date.day}';
     final completionKey =
         widget.daily ? dailyKey : 'level_done_${widget.level.id}';
     final alreadyRewarded = prefs.getBool(completionKey) ?? false;
@@ -1636,7 +1767,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
   }
 
   void _undo() {
-    if (history.isEmpty || finished) return;
+    if (history.isEmpty || finished || isPouring) return;
     SoundManager.instance.tap();
     HapticFeedback.selectionClick();
     final last = history.removeLast();
@@ -1654,7 +1785,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
   }
 
   Future<void> _hint() async {
-    if (finished) return;
+    if (finished || isPouring) return;
     int from = -1;
     int to = -1;
 
@@ -1702,7 +1833,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
   }
 
   Future<void> _addVial() async {
-    if (finished) return;
+    if (finished || isPouring) return;
     if (tubes.length >= widget.level.tubes.length + 2) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Maximum 2 extra jars.')),
@@ -1804,11 +1935,8 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
                         pouringOut: pouringFrom == index,
                         pouringIn: pouringTo == index,
                         celebrate: celebrationTube == index,
-                        incomingFruit: pouringTo == index &&
-                                pouringFrom != null &&
-                                tubes[pouringFrom!].isNotEmpty
-                            ? tubes[pouringFrom!].last
-                            : null,
+                        incomingFruit: pouringTo == index ? pouringFruit : null,
+                        pourStep: pourStep,
                         onTap: () => _tapTube(index),
                       ),
                     ),
@@ -2103,4 +2231,3 @@ class _GameAction extends StatelessWidget {
     );
   }
 }
-

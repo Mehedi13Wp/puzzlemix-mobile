@@ -6,7 +6,7 @@
 - **Package name:** `com.mehedi.puzzlemix`
 - **Category:** Game → Puzzle
 - **Primary language:** English
-- **Current Play candidate:** 0.6.1 (versionCode 8)
+- **Current Play candidate:** 0.6.11 (versionCode 18)
 - **Contains ads:** No
 - **In-app purchases:** No
 - **Login required:** No
