@@ -1,0 +1,98 @@
+name: Safe PR Dev APK
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "lib/**"
+      - "pubspec.yaml"
+      - "tools/**"
+      - "test/**"
+      - ".github/workflows/safe-pr-dev-apk.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: safe-pr-dev-apk-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-and-build:
+    name: Analyze, test and build isolated DEV APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Create isolated Android DEV shell
+        shell: bash
+        run: |
+          flutter create --platforms=android --project-name=puzzlemix --org=com.mehedi --no-pub /tmp/puzzlemix-ci-shell
+          cp -R /tmp/puzzlemix-ci-shell/android ./android
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          gradle = Path("android/app/build.gradle.kts")
+          source = gradle.read_text(encoding="utf-8")
+          source, count = re.subn(
+              r'applicationId\s*=\s*"[^"]+"',
+              'applicationId = "com.mehedi.puzzlemix.dev"',
+              source,
+              count=1,
+          )
+          if count != 1:
+              raise SystemExit("Could not set DEV applicationId")
+          gradle.write_text(source, encoding="utf-8")
+
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          source = manifest.read_text(encoding="utf-8")
+          source, count = re.subn(
+              r'android:label="[^"]+"',
+              'android:label="PuzzleMix DEV"',
+              source,
+              count=1,
+          )
+          if count != 1:
+              raise SystemExit("Could not set DEV label")
+          manifest.write_text(source, encoding="utf-8")
+          PY
+
+      - name: Generate game audio assets
+        run: python3 tools/generate_sounds.py
+
+      - name: Resolve dependencies
+        run: flutter pub get
+
+      - name: Static analysis
+        run: flutter analyze
+
+      - name: Run Flutter tests when present
+        shell: bash
+        run: |
+          if [ -d test ] && find test -type f -name '*_test.dart' -print -quit | grep -q .; then
+            flutter test
+          else
+            echo "No Flutter tests found; skipping test execution."
+          fi
+
+      - name: Build unsigned-for-release, debug-signed DEV APK
+        run: flutter build apk --debug
+
+      - name: Upload DEV APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PuzzleMix-PR-DEV-APK-${{ github.run_number }}
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
