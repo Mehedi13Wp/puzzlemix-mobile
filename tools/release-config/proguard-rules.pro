@@ -7,3 +7,9 @@
 -keep class kotlin.coroutines.Continuation { *; }
 -keep class kotlin.coroutines.intrinsics.CoroutineSingletons { *; }
 -keep class kotlin.coroutines.intrinsics.IntrinsicsKt { *; }
+
+# Room/WorkManager 2.7 loads these zero-argument constructors through reflection.
+# Keep only the reflected entry points; retain R8 for the rest of the app.
+-keep class androidx.work.impl.WorkDatabase_Impl { public <init>(); }
+-keep class androidx.work.OverwritingInputMerger { public <init>(); }
+-keep class androidx.work.ArrayCreatingInputMerger { public <init>(); }

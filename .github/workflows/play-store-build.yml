@@ -96,6 +96,20 @@ jobs:
       - name: Verify AAB signature
         run: jarsigner -verify -verbose -certs build/app/outputs/bundle/release/app-release.aab
 
+      - name: Prepare AAB download
+        run: |
+          mkdir -p aab-download
+          cp build/app/outputs/bundle/release/app-release.aab "aab-download/PuzzleMix-v${RELEASE_VERSION}-${RELEASE_CODE}-play.aab"
+          cd aab-download
+          sha256sum *.aab > SHA256SUMS.txt
+
+      - name: Upload AAB download
+        uses: actions/upload-artifact@v4
+        with:
+          name: PuzzleMix-AAB-v${{ env.RELEASE_VERSION }}-${{ env.RELEASE_CODE }}
+          path: aab-download/
+          retention-days: 30
+
       - name: Also build signed APK for device testing
         run: flutter build apk --release
 
@@ -111,6 +125,7 @@ jobs:
 
       - name: Verify minified preferences JNI signature
         run: python3 tools/check_release_jni.py build/app/outputs/flutter-apk/app-release.apk
+          python3 tools/check_release_workmanager.py build/app/outputs/flutter-apk/app-release.apk
 
       - name: Preserve signed production APK
         run: |
@@ -130,6 +145,7 @@ jobs:
           python3 tools/configure_ads_android.py --consent-test
           flutter build apk --release
           python3 tools/check_release_jni.py build/app/outputs/flutter-apk/app-release.apk
+          python3 tools/check_release_workmanager.py build/app/outputs/flutter-apk/app-release.apk
           mkdir -p dist
           cp build/app/outputs/flutter-apk/app-release.apk "dist/PuzzleMix-v${RELEASE_VERSION}-${RELEASE_CODE}-DEV-minified.apk"
           cp /tmp/puzzlemix-production.gradle.kts android/app/build.gradle.kts
