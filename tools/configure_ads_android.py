@@ -68,6 +68,10 @@ class MainActivity : FlutterActivity() {{
     }}
 }}
 ''',encoding='utf-8')
-if 'proguard-rules.pro' not in text:
+if not (app/'proguard-rules.pro').is_file():
     raise SystemExit('Release JNI/R8 rules must be applied before ads configuration')
+if 'proguard-rules.pro' not in text:
+    if 'release {' not in text: raise SystemExit('Release build type is missing')
+    text=text.replace('release {', 'release {\n            isMinifyEnabled = true\n            isShrinkResources = true\n            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")',1)
+    gradle.write_text(text,encoding='utf-8')
 print('Ads configured: '+('production with UMP consent' if package==prod else 'DEV sample inventory'+(' with UMP consent' if consent_test else '')))
