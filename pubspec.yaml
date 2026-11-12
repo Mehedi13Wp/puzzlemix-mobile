@@ -1,7 +1,7 @@
 name: puzzlemix_mobile
 description: PuzzleMix is a polished casual puzzle game featuring Fruit Sort Deluxe, Arrow Escape, and Color Crew.
 publish_to: "none"
-version: 0.6.11+18
+version: 0.6.12+19
 
 environment:
   sdk: ">=3.4.0 <4.0.0"
@@ -11,6 +11,7 @@ dependencies:
     sdk: flutter
   shared_preferences: ^2.3.2
   audioplayers: ^6.1.0
+  google_mobile_ads: ^9.2.0
 
 dev_dependencies:
   flutter_test:

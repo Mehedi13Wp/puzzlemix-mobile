@@ -1,3 +1,5 @@
+import 'ads/ad_service.dart';
+import 'ads/ad_widgets.dart';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -7,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'arrow_escape.dart';
 import 'color_crew.dart';
 import 'color_sort_fx.dart';
+import 'fruit_jar_board.dart';
 import 'sound_manager.dart';
 import 'privacy_policy.dart';
 
@@ -265,7 +268,166 @@ final levels = <PuzzleLevel>[
     [],
     []
   ]),
+  const PuzzleLevel(id: 16, par: 18, tubes: [
+    [4, 1, 4, 2],
+    [4, 0, 3, 2],
+    [3, 1, 3, 2],
+    [1, 3, 4, 0],
+    [0, 2, 0, 1],
+    [],
+    [],
+  ]),
+  const PuzzleLevel(id: 17, par: 18, tubes: [
+    [4, 1, 1, 3],
+    [0, 3, 4, 2],
+    [3, 0, 2, 0],
+    [3, 4, 0, 2],
+    [4, 1, 1, 2],
+    [],
+    [],
+  ]),
+  const PuzzleLevel(id: 18, par: 26, tubes: [
+    [4, 3, 2, 0],
+    [3, 3, 2, 1],
+    [1, 2, 0, 4],
+    [1, 2, 1, 4],
+    [0, 4, 0, 3],
+    [],
+    [],
+  ]),
+  const PuzzleLevel(id: 19, par: 20, tubes: [
+    [2, 2, 1, 4],
+    [2, 1, 0, 0],
+    [2, 3, 4, 4],
+    [0, 3, 1, 0],
+    [4, 1, 3, 3],
+    [],
+    [],
+  ]),
+  const PuzzleLevel(id: 20, par: 18, tubes: [
+    [1, 2, 4, 3],
+    [0, 3, 0, 4],
+    [2, 3, 1, 4],
+    [3, 1, 2, 4],
+    [2, 0, 1, 0],
+    [],
+    [],
+  ]),
+  const PuzzleLevel(id: 21, par: 26, tubes: [
+    [1, 4, 3, 5],
+    [0, 4, 1, 2],
+    [5, 2, 0, 0],
+    [3, 3, 1, 4],
+    [2, 1, 5, 3],
+    [4, 2, 0, 5],
+    [],
+    [],
+  ]),
+  const PuzzleLevel(id: 22, par: 32, tubes: [
+    [5, 4, 5, 4],
+    [2, 1, 0, 1],
+    [0, 1, 4, 5],
+    [1, 2, 3, 3],
+    [5, 4, 2, 0],
+    [0, 3, 3, 2],
+    [],
+    [],
+  ]),
+  const PuzzleLevel(id: 23, par: 28, tubes: [
+    [2, 0, 3, 0],
+    [5, 2, 3, 2],
+    [2, 4, 0, 0],
+    [4, 3, 5, 5],
+    [3, 1, 4, 4],
+    [5, 1, 1, 1],
+    [],
+    [],
+  ]),
+  const PuzzleLevel(id: 24, par: 26, tubes: [
+    [5, 4, 1, 5],
+    [1, 5, 4, 0],
+    [2, 4, 1, 1],
+    [2, 0, 0, 2],
+    [3, 0, 3, 5],
+    [2, 3, 3, 4],
+    [],
+    [],
+  ]),
+  const PuzzleLevel(id: 25, par: 23, tubes: [
+    [4, 5, 0, 4],
+    [3, 2, 3, 3],
+    [1, 0, 5, 2],
+    [3, 0, 1, 1],
+    [4, 5, 4, 5],
+    [1, 2, 2, 0],
+    [],
+    [],
+  ]),
+  const PuzzleLevel(id: 26, par: 37, tubes: [
+    [3, 4, 1, 5],
+    [2, 4, 1, 5],
+    [0, 6, 2, 4],
+    [5, 0, 3, 5],
+    [2, 6, 6, 3],
+    [3, 2, 1, 0],
+    [4, 1, 0, 6],
+    [],
+    [],
+  ]),
+  const PuzzleLevel(id: 27, par: 23, tubes: [
+    [1, 5, 2, 1],
+    [3, 3, 3, 2],
+    [2, 2, 0, 1],
+    [6, 3, 5, 4],
+    [0, 0, 4, 4],
+    [0, 6, 6, 5],
+    [1, 4, 6, 5],
+    [],
+    [],
+  ]),
+  const PuzzleLevel(id: 28, par: 24, tubes: [
+    [1, 0, 5, 5],
+    [2, 3, 6, 6],
+    [2, 5, 4, 1],
+    [1, 4, 0, 5],
+    [4, 3, 2, 0],
+    [2, 1, 6, 0],
+    [6, 3, 4, 3],
+    [],
+    [],
+  ]),
+  const PuzzleLevel(id: 29, par: 37, tubes: [
+    [4, 3, 2, 0],
+    [5, 2, 1, 3],
+    [1, 5, 4, 5],
+    [5, 6, 0, 1],
+    [6, 4, 3, 2],
+    [2, 6, 0, 3],
+    [0, 4, 6, 1],
+    [],
+    [],
+  ]),
+  const PuzzleLevel(id: 30, par: 41, tubes: [
+    [1, 4, 2, 0],
+    [0, 3, 5, 0],
+    [1, 6, 5, 0],
+    [4, 3, 3, 6],
+    [2, 5, 1, 5],
+    [6, 4, 6, 2],
+    [1, 3, 2, 4],
+    [],
+    [],
+  ]),
 ];
+
+int highestUnlockedFruitLevel(SharedPreferences prefs) {
+  var highest = (prefs.getInt('highest_level') ?? 1).clamp(1, levels.length);
+  while (
+      highest < levels.length && prefs.getBool('level_done_$highest') == true) {
+    highest++;
+  }
+  return highest;
+}
 
 const dailyLevel = PuzzleLevel(
   id: 1000,
@@ -305,6 +467,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _load();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       SoundManager.instance.startBackground();
+      AdService.instance.initialize();
     });
   }
 
@@ -314,7 +477,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       coins = prefs.getInt('coins') ?? 200;
       stars = prefs.getInt('stars') ?? 0;
-      highestLevel = prefs.getInt('highest_level') ?? 1;
+      highestLevel = highestUnlockedFruitLevel(prefs);
     });
   }
 
@@ -351,8 +514,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: PremiumFruitBackground(
-        dark: true,
+      bottomNavigationBar: const HomeAdBanner(),
+      body: ColoredBox(
+        color: const Color(0xFF101E1B),
         child: SafeArea(
           child: CustomScrollView(
             physics: const BouncingScrollPhysics(),
@@ -395,13 +559,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                     ),
                                     const SizedBox(width: 10),
-                                    const Text(
-                                      'PuzzleMix',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 31,
-                                        fontWeight: FontWeight.w900,
-                                        letterSpacing: -.8,
+                                    const Expanded(
+                                      child: FittedBox(
+                                        fit: BoxFit.scaleDown,
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                          'PuzzleMix',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 31,
+                                            fontWeight: FontWeight.w900,
+                                            letterSpacing: -.8,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ],
@@ -657,181 +827,58 @@ class _PlayerProgressCard extends StatelessWidget {
 class _FruitHeroCard extends StatelessWidget {
   final int level;
   final VoidCallback onTap;
-
-  const _FruitHeroCard({
-    required this.level,
-    required this.onTap,
-  });
-
+  const _FruitHeroCard({required this.level, required this.onTap});
   @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(30),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(30),
-        child: Ink(
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              colors: [
-                Color(0xFF0E4B2D),
-                Color(0xFF177A45),
-                Color(0xFF239752),
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: .14),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: .24),
-                blurRadius: 30,
-                offset: const Offset(0, 14),
-              ),
-              BoxShadow(
-                color: const Color(0xFF58D98C).withValues(alpha: .08),
-                blurRadius: 32,
-                spreadRadius: 2,
-              ),
-            ],
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                right: -30,
-                top: -38,
-                child: Container(
-                  width: 165,
-                  height: 165,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFFD6FF62).withValues(alpha: .10),
-                  ),
-                ),
-              ),
-              Positioned(
-                right: 16,
-                top: 13,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: .16),
-                    borderRadius: BorderRadius.circular(999),
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: .10),
-                    ),
-                  ),
-                  child: const Text(
-                    'FEATURED',
-                    style: TextStyle(
-                      color: Color(0xFFDFFF9C),
-                      fontSize: 10,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: .8,
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 19),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        FruitToken(fruitId: 5, size: 48),
-                        SizedBox(width: 5),
-                        FruitToken(fruitId: 1, size: 48),
-                        SizedBox(width: 5),
-                        FruitToken(fruitId: 2, size: 48),
-                        SizedBox(width: 5),
-                        FruitToken(fruitId: 4, size: 48),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Fruit Sort Deluxe',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 26,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: -.5,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    const Text(
-                      'Sort juicy fruit pieces into perfect matching jars.',
-                      style: TextStyle(
-                        color: Color(0xFFCBEAD3),
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 17),
-                    Row(
-                      children: [
-                        const _MiniFeature(
-                          icon: Icons.layers_rounded,
-                          text: '15 levels',
-                        ),
-                        const SizedBox(width: 8),
-                        const _MiniFeature(
-                          icon: Icons.auto_awesome_rounded,
-                          text: 'Zen play',
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 17),
-                    Container(
-                      decoration: BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color:
-                                const Color(0xFFFFC34A).withValues(alpha: .20),
-                            blurRadius: 18,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: FilledButton.icon(
-                        onPressed: onTap,
-                        style: FilledButton.styleFrom(
-                          backgroundColor: const Color(0xFFFFC34A),
-                          foregroundColor: const Color(0xFF173E28),
-                          minimumSize: const Size.fromHeight(56),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18),
-                          ),
-                        ),
-                        icon: const Icon(
-                          Icons.play_arrow_rounded,
-                          size: 29,
-                        ),
-                        label: Text(
-                          'CONTINUE  •  LEVEL $level',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: .3,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: const Color(0xFF20382E),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: Colors.white.withValues(alpha: .09)),
         ),
-      ),
-    );
-  }
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            const Expanded(
+                child: Text('CONTINUE YOUR JOURNEY',
+                    style: TextStyle(
+                        color: Color(0xFFA5CCB5),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.3))),
+            const FruitToken(fruitId: 5, size: 36),
+          ]),
+          const SizedBox(height: 14),
+          const Text('Fruit Sort',
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 28,
+                  height: 1.1,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -.7)),
+          const SizedBox(height: 8),
+          const Text('A little focus. A satisfying match.',
+              style: TextStyle(
+                  color: Color(0xFFB4CBBE), fontSize: 13, height: 1.5)),
+          const SizedBox(height: 18),
+          Wrap(spacing: 8, runSpacing: 8, children: [
+            _MiniFeature(
+                icon: Icons.layers_outlined, text: '${levels.length} levels'),
+            _MiniFeature(icon: Icons.spa_outlined, text: 'At your own pace'),
+          ]),
+          const SizedBox(height: 20),
+          FilledButton.icon(
+              onPressed: onTap,
+              style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xFFC5E5B6),
+                  foregroundColor: const Color(0xFF173524),
+                  minimumSize: const Size.fromHeight(52),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14))),
+              icon: const Icon(Icons.play_arrow_rounded),
+              label: Text('Continue · Level $level',
+                  style: const TextStyle(fontWeight: FontWeight.w700))),
+        ]),
+      );
 }
 
 class _MiniFeature extends StatelessWidget {
@@ -887,7 +934,7 @@ class _StatPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF0A3E24).withValues(alpha: .86),
+        color: const Color(0xFF20342D).withValues(alpha: .86),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: Colors.white.withValues(alpha: .10),
@@ -922,7 +969,7 @@ class _RoundIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: const Color(0xFF0A3E24).withValues(alpha: .88),
+      color: const Color(0xFF20342D).withValues(alpha: .88),
       shape: const CircleBorder(),
       child: InkWell(
         onTap: onTap,
@@ -1009,8 +1056,8 @@ class _DailyCard extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [
-                Color(0xFF0B4227),
-                Color(0xFF105B34),
+                Color(0xFF1A2E27),
+                Color(0xFF1A2E27),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -1170,8 +1217,8 @@ class _ModeCard extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [
-                Color(0xFF0B4025),
-                Color(0xFF0D4A2A),
+                Color(0xFF1A2E27),
+                Color(0xFF1A2E27),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -1285,7 +1332,7 @@ class _LevelSelectScreenState extends State<LevelSelectScreen> {
     final prefs = await SharedPreferences.getInstance();
     if (!mounted) return;
     setState(() {
-      highest = prefs.getInt('highest_level') ?? 1;
+      highest = highestUnlockedFruitLevel(prefs);
       stars = prefs.getInt('stars') ?? 0;
     });
   }
@@ -1735,12 +1782,13 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
       await prefs.setInt('coins', newCoins);
       await prefs.setInt('stars', newStars);
       await prefs.setBool(completionKey, true);
+    }
 
-      if (!widget.daily) {
-        final highest = prefs.getInt('highest_level') ?? 1;
-        if (widget.level.id >= highest && widget.level.id < levels.length) {
-          await prefs.setInt('highest_level', widget.level.id + 1);
-        }
+    if (!widget.daily) {
+      final highest = math.max(highestUnlockedFruitLevel(prefs),
+          math.min(widget.level.id + 1, levels.length));
+      if (highest != prefs.getInt('highest_level')) {
+        await prefs.setInt('highest_level', highest);
       }
     }
 
@@ -1752,15 +1800,14 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => LevelCompleteCelebration(
+      builder: (dialogContext) => LevelCompleteCelebration(
         stars: stars,
         moves: moves,
         par: widget.level.par,
         reward: reward,
         alreadyRewarded: alreadyRewarded,
         onContinue: () {
-          Navigator.of(context).pop();
-          Navigator.of(context).pop(true);
+          continueAfterCompletion(dialogContext);
         },
       ),
     );
@@ -1784,52 +1831,56 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     setState(_resetBoard);
   }
 
+  bool _hintBusy = false;
   Future<void> _hint() async {
-    if (finished || isPouring) return;
-    int from = -1;
-    int to = -1;
+    if (_hintBusy) return;
+    _hintBusy = true;
+    try {
+      if (finished || isPouring) return;
+      int from = -1;
+      int to = -1;
 
-    outer:
-    for (int i = 0; i < tubes.length; i++) {
-      if (tubes[i].isEmpty) continue;
-      for (int j = 0; j < tubes.length; j++) {
-        if (_canPour(i, j)) {
-          if (tubes[j].isEmpty && tubes[i].every((c) => c == tubes[i].first)) {
-            continue;
+      outer:
+      for (int i = 0; i < tubes.length; i++) {
+        if (tubes[i].isEmpty) continue;
+        for (int j = 0; j < tubes.length; j++) {
+          if (_canPour(i, j)) {
+            if (tubes[j].isEmpty &&
+                tubes[i].every((c) => c == tubes[i].first)) {
+              continue;
+            }
+            from = i;
+            to = j;
+            break outer;
           }
-          from = i;
-          to = j;
-          break outer;
         }
       }
-    }
 
-    if (from < 0) {
+      if (from < 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No useful move found. Try Undo.')),
+        );
+        return;
+      }
+
+      final cost = await chooseHintCost(context, coins);
+      if (!mounted || cost == null || finished) return;
+      final prefs = await SharedPreferences.getInstance();
+      final balance = prefs.getInt('coins') ?? 200;
+      if (balance < cost) return;
+      final newCoins = balance - cost;
+      if (cost > 0) await prefs.setInt('coins', newCoins);
+      if (!mounted) return;
+      setState(() => coins = newCoins);
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No useful move found. Try Undo.')),
+        SnackBar(
+          content: Text('Hint: Jar ${from + 1}  →  Jar ${to + 1}'),
+        ),
       );
-      return;
+    } finally {
+      _hintBusy = false;
     }
-
-    const cost = 30;
-    if (coins < cost) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You need 30 coins for a hint.')),
-      );
-      return;
-    }
-
-    final prefs = await SharedPreferences.getInstance();
-    final newCoins = coins - cost;
-    await prefs.setInt('coins', newCoins);
-    if (!mounted) return;
-    setState(() => coins = newCoins);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Hint: Jar ${from + 1}  →  Jar ${to + 1}'),
-      ),
-    );
   }
 
   Future<void> _addVial() async {
@@ -1864,7 +1915,7 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
     final title = widget.daily ? 'Daily Harvest' : 'Level ${widget.level.id}';
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF073B21),
+        backgroundColor: const Color(0xFF101E1B),
         foregroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         title: Column(
@@ -1900,11 +1951,11 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
           ),
         ],
       ),
-      body: PremiumFruitBackground(
-        dark: true,
+      body: ColoredBox(
+        color: const Color(0xFF101E1B),
         child: Column(
           children: [
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: _MoveStatusBanner(
@@ -1913,41 +1964,31 @@ class _ColorSortScreenState extends State<ColorSortScreen> {
                 selected: selected != null,
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 4),
             Expanded(
-              child: Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 18,
-                    vertical: 10,
-                  ),
-                  child: Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: 12,
-                    runSpacing: 25,
-                    children: List.generate(
-                      tubes.length,
-                      (index) => RealisticTube(
-                        number: index + 1,
-                        layers: tubes[index],
-                        palette: gameColors,
-                        selected: selected == index,
-                        pouringOut: pouringFrom == index,
-                        pouringIn: pouringTo == index,
-                        celebrate: celebrationTube == index,
-                        incomingFruit: pouringTo == index ? pouringFruit : null,
-                        pourStep: pourStep,
-                        onTap: () => _tapTube(index),
-                      ),
-                    ),
-                  ),
-                ),
+              child: FruitJarBoard(
+                children: List.generate(
+                    tubes.length,
+                    (index) => RealisticTube(
+                          number: index + 1,
+                          layers: tubes[index],
+                          palette: gameColors,
+                          selected: selected == index,
+                          pouringOut: pouringFrom == index,
+                          pouringIn: pouringTo == index,
+                          celebrate: celebrationTube == index,
+                          incomingFruit:
+                              pouringTo == index ? pouringFruit : null,
+                          pourStep: pourStep,
+                          onTap: () => _tapTube(index),
+                        )),
               ),
             ),
             Container(
-              padding: const EdgeInsets.fromLTRB(14, 13, 14, 18),
+              padding: EdgeInsets.fromLTRB(
+                  14, 10, 14, 10 + MediaQuery.paddingOf(context).bottom),
               decoration: BoxDecoration(
-                color: const Color(0xFF073B21).withValues(alpha: .96),
+                color: const Color(0xFF101E1B).withValues(alpha: .96),
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(30),
                 ),
@@ -2032,7 +2073,7 @@ class _MoveStatusBanner extends StatelessWidget {
       duration: const Duration(milliseconds: 220),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
       decoration: BoxDecoration(
-        color: const Color(0xFF0A4327).withValues(alpha: .88),
+        color: const Color(0xFF1A2E27).withValues(alpha: .88),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: accent.withValues(alpha: .24)),
         boxShadow: [
@@ -2179,7 +2220,7 @@ class _GameAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: const Color(0xFF0D4A2B),
+      color: const Color(0xFF20342D),
       borderRadius: BorderRadius.circular(18),
       child: InkWell(
         onTap: onTap,

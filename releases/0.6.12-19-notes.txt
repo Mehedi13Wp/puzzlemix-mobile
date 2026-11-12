@@ -1,0 +1,6 @@
+<en-US>
+Enjoy 30 Fruit Sort levels and a cleaner, modern design.
+All jars now fit on the game screen without scrolling.
+Added a dismissible home-screen ad banner and privacy choices where required.
+Your existing progress, coins and stars are preserved.
+</en-US>

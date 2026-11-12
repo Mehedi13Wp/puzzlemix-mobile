@@ -1,46 +1,24 @@
-# PuzzleMix — Google Play Data Safety Draft
+# PuzzleMix 0.6.12 (19) — Play declaration review
 
-**Play candidate:** 0.6.1 (versionCode 8)  
-**Package:** `com.mehedi.puzzlemix`  
-**Last reviewed:** 8 October 2026
+Prepared 13 November 2026. Production package: com.mehedi.puzzlemix.
+The owner confirmed the Play target audience excludes children and the AdMob consent message is published.
+The app includes Google Mobile Ads 9.2.0, with UMP consent gating and a privacy-options entry point.
 
-This draft reflects the current source code and dependencies. Re-check it before every production release.
+Before uploading, review the actual Play Console declarations against the configured SDK:
 
-## Current answers
+- Contains ads: Yes.
+- Review collected/shared data: approximate location inferred from IP, app interactions, diagnostics and device/account identifiers.
+- Review purposes: advertising, analytics and fraud prevention/security; account for the actual SDK configuration.
+- Google states SDK traffic is encrypted in transit. Review optional advertising-ID handling separately.
+- Do not reuse the former no-ads/no-data declarations.
+- Publish the updated public privacy policy and verify the exact URL entered in Play Console.
 
-- Does the app collect or share any required user data types? **No**
-- Is all user data encrypted in transit? **Not applicable — the app does not transmit user data**
-- Can users request deletion of developer-held data? **Not applicable — there is no account/server-side user data**
-- Account creation: **No**
-- Ads: **No**
-- In-app purchases: **No**
-- Analytics SDK: **No**
-- Crash-reporting SDK: **No**
-- Location: **No**
-- Contacts: **No**
-- Camera: **No**
-- Microphone / audio recording: **No**
-- Photos or videos: **No**
-- Files/documents: **No**
-- Precise device identifiers for ads/analytics: **No**
+Source: https://developers.google.com/admob/android/privacy/play-data-disclosure
+The developer remains responsible for the final Console answers; this document does not assert those forms were updated.
 
-## Local-only data
+Saved coins, stars, completed levels, tutorials and sound preferences stay on-device with the existing keys.
+There is no new developer account system, server, purchase flow or Firebase analytics integration.
 
-PuzzleMix uses `shared_preferences` to keep game state on the device, including:
-
-- coins
-- stars
-- highest unlocked level
-- completed-level reward status
-- tutorial status
-- sound preference
-
-This data is not sent to the developer by the current app.
-
-## Bundled audio
-
-The app uses locally bundled sound effects and background music through `audioplayers`. It does not request microphone or media-library access.
-
-## Important release rule
-
-If a future version adds ads, analytics, crash reporting, cloud saves, login/accounts, online multiplayer, push-notification SDKs, or any other external service, update this file, `PRIVACY_POLICY.md`, and the Play Console Data Safety form before release.
+Release builds may be prepared with tools/check_play_readiness.py --candidate.
+Without --candidate, the check also requires a release-validation record with physical minified tests and published declaration confirmation.
+Do not present a candidate as ready for upload until those checks pass.

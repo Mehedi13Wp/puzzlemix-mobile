@@ -100,3 +100,5 @@ print(
     if skip_signing
     else "- release signing: permanent upload keystore"
 )
+
+runpy.run_path(str(Path(__file__).with_name("configure_ads_android.py")))

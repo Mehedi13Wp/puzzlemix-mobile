@@ -1,0 +1,13 @@
+{
+  "package": "com.mehedi.puzzlemix",
+  "enabled": true,
+  "verification": "IDs supplied by user; audience and published consent message confirmed by user. Minified release/device tests and Play declarations must be completed before upload.",
+  "appId": "ca-app-pub-7388769334096676~9043433187",
+  "bannerId": "ca-app-pub-7388769334096676/6201028876",
+  "interstitialId": "ca-app-pub-7388769334096676/1970139820",
+  "rewardedId": "ca-app-pub-7388769334096676/3474793181",
+  "audience": "not-child-directed",
+  "consentMessagePublished": true,
+  "confirmationSource": "User confirmed Play target audience excludes children and AdMob consent message is published, 2026-11-13.",
+  "previousVersionCode": 18
+}

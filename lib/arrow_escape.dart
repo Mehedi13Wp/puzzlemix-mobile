@@ -1,3 +1,4 @@
+import 'ads/ad_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -114,9 +115,7 @@ class _ArrowLevelSelectScreenState extends State<ArrowLevelSelectScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    unlocked
-                        ? (level < 4 ? '4 × 4' : '5 × 5')
-                        : 'Locked',
+                    unlocked ? (level < 4 ? '4 × 4' : '5 × 5') : 'Locked',
                     style: const TextStyle(
                       color: Color(0xFF8E8798),
                       fontSize: 12,
@@ -261,35 +260,38 @@ class _ArrowEscapeScreenState extends State<ArrowEscapeScreen> {
     }
   }
 
+  bool _hintBusy = false;
   Future<void> _hint() async {
-    if (finished) return;
+    if (_hintBusy) return;
+    _hintBusy = true;
+    try {
+      if (finished) return;
 
-    const cost = 30;
-    if (coins < cost) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You need 30 coins for a hint.')),
-      );
-      return;
-    }
-
-    int? candidate;
-    for (final index in alive) {
-      if (_canEscape(index)) {
-        candidate = index;
-        break;
+      int? candidate;
+      for (final index in alive) {
+        if (_canEscape(index)) {
+          candidate = index;
+          break;
+        }
       }
+      if (candidate == null) return;
+
+      final cost = await chooseHintCost(context, coins);
+      if (!mounted || cost == null || finished) return;
+      final prefs = await SharedPreferences.getInstance();
+      final balance = prefs.getInt('coins') ?? 200;
+      if (balance < cost) return;
+      final newCoins = balance - cost;
+      if (cost > 0) await prefs.setInt('coins', newCoins);
+      if (!mounted) return;
+
+      setState(() {
+        coins = newCoins;
+        hintIndex = candidate;
+      });
+    } finally {
+      _hintBusy = false;
     }
-    if (candidate == null) return;
-
-    final prefs = await SharedPreferences.getInstance();
-    final newCoins = coins - cost;
-    await prefs.setInt('coins', newCoins);
-    if (!mounted) return;
-
-    setState(() {
-      coins = newCoins;
-      hintIndex = candidate;
-    });
   }
 
   Future<void> _finish() async {
@@ -326,7 +328,7 @@ class _ArrowEscapeScreenState extends State<ArrowEscapeScreen> {
     showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(26),
         ),
@@ -361,8 +363,7 @@ class _ArrowEscapeScreenState extends State<ArrowEscapeScreen> {
         actions: [
           FilledButton(
             onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pop(true);
+              continueAfterCompletion(dialogContext);
             },
             child: const Text('CONTINUE'),
           ),
@@ -509,8 +510,7 @@ class _ArrowEscapeScreenState extends State<ArrowEscapeScreen> {
                     padding: const EdgeInsets.all(18),
                     child: GridView.builder(
                       physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate:
-                          SliverGridDelegateWithFixedCrossAxisCount(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: size,
                         mainAxisSpacing: 8,
                         crossAxisSpacing: 8,

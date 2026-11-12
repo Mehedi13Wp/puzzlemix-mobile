@@ -1,12 +1,12 @@
 # PuzzleMix Privacy Policy
 
-**Last updated: 8 October 2026**
+**Last updated: 13 November 2026**
 
 PuzzleMix is a casual puzzle game developed and published by **Mehedi Ahamed**.
 
 ## Data collection
 
-PuzzleMix does **not** collect, transmit, sell, rent, or share personal information. The current version does not use advertising SDKs, analytics SDKs, account systems, location services, contacts, camera, microphone, or other sensitive device permissions.
+PuzzleMix uses Google AdMob to display ads. Before requesting production ads, the app checks privacy requirements with Google's User Messaging Platform and presents a consent message when required. Google Mobile Ads may collect and share IP address (used to estimate approximate location), device and account identifiers such as advertising ID and app set ID, ad/app interactions, and diagnostic information for advertising, analytics and fraud prevention. Google encrypts SDK data in transit. See https://policies.google.com/privacy and https://developers.google.com/admob/android/privacy/play-data-disclosure. Coins, stars, unlocked levels and saved game progress remain on your device and are not sent to the developer.
 
 ## Local game data
 
@@ -18,7 +18,7 @@ The game plays bundled sound effects and background music from local app assets.
 
 ## Children and families
 
-PuzzleMix is a general-audience puzzle game. The app does not knowingly collect personal data from children or any other users.
+PuzzleMix is intended for a non-child-directed audience. The developer has configured its intended audience in Google Play Console.
 
 ## Data retention and deletion
 
@@ -26,11 +26,11 @@ Because the current version stores game progress locally and does not maintain d
 
 ## Security
 
-PuzzleMix is designed to minimize data exposure by keeping game progress on-device and avoiding unnecessary permissions and network-based tracking.
+PuzzleMix keeps game progress on-device. Google handles advertising SDK data under its own privacy policy.
 
 ## Changes to this policy
 
-If PuzzleMix later adds services such as ads, analytics, cloud saves, accounts, or online features, this privacy policy and the Google Play Data safety declaration will be updated before those features are released.
+Privacy choices can be changed through Ad privacy choices on the in-app Privacy Policy screen when this option is required. Android advertising-ID controls are available in device settings. This policy may be updated when app functionality or data practices change.
 
 ## Privacy inquiries
 

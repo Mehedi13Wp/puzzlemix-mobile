@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:puzzlemix_mobile/main.dart';
+import 'package:puzzlemix_mobile/arrow_escape.dart';
+import 'package:puzzlemix_mobile/color_crew.dart';
 import 'package:puzzlemix_mobile/color_sort_fx.dart';
 import 'package:puzzlemix_mobile/sound_manager.dart';
 
@@ -122,4 +124,50 @@ void main() {
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
   });
+  final hintBoards = <String, Widget>{
+    'Fruit Sort': ColorSortScreen(level: levels.first),
+    'Arrow Escape': const ArrowEscapeScreen(level: 1),
+    'Color Crew': const ColorCrewScreen(level: 1),
+  };
+  for (final entry in hintBoards.entries) {
+    testWidgets(
+        '${entry.key} hint Cancel preserves saves and paid hint deducts exactly 30 coins',
+        (tester) async {
+      tester.view.physicalSize = const Size(440, 1000);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      SharedPreferences.setMockInitialValues({
+        'fruit_tutorial_seen': true,
+        'coins': 200,
+        'stars': 34,
+        'highest_level': 10,
+        'arrow_highest': 3,
+        'crew_highest': 2,
+      });
+      await tester.pumpWidget(MaterialApp(home: entry.value));
+      await tester.pump(const Duration(milliseconds: 100));
+      final prefs = await SharedPreferences.getInstance();
+      await tester.tap(find.text('Hint'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.tap(find.text('Cancel'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(prefs.getInt('coins'), 200);
+      await tester.tap(find.text('Hint'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.tap(find.text('Use 30 coins'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 400));
+      expect(prefs.getInt('coins'), 170);
+      expect(prefs.getInt('stars'), 34);
+      expect(prefs.getInt('highest_level'), 10);
+      expect(prefs.getInt('arrow_highest'), 3);
+      expect(prefs.getInt('crew_highest'), 2);
+      expect(tester.takeException(), isNull);
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
 }

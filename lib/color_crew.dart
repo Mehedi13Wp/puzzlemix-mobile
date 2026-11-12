@@ -1,3 +1,4 @@
+import 'ads/ad_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -192,9 +193,7 @@ class _ColorCrewScreenState extends State<ColorCrewScreen> {
 
     columns = baseColumns
         .map(
-          (column) => column
-              .map((c) => (c + rotation) % 4)
-              .toList(),
+          (column) => column.map((c) => (c + rotation) % 4).toList(),
         )
         .toList();
 
@@ -362,39 +361,42 @@ class _ColorCrewScreenState extends State<ColorCrewScreen> {
     setState(() => _restore(snap));
   }
 
+  bool _hintBusy = false;
   Future<void> _hint() async {
-    if (finished) return;
-    const cost = 30;
+    if (_hintBusy) return;
+    _hintBusy = true;
+    try {
+      if (finished) return;
 
-    if (coins < cost) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You need 30 coins for a hint.')),
-      );
-      return;
-    }
-
-    int? candidate;
-    for (int i = 0; i < columns.length; i++) {
-      if (columns[i].isEmpty) continue;
-      final top = columns[i].last;
-      if (_activeIndexForColor(top) >= 0) {
-        candidate = i;
-        break;
+      int? candidate;
+      for (int i = 0; i < columns.length; i++) {
+        if (columns[i].isEmpty) continue;
+        final top = columns[i].last;
+        if (_activeIndexForColor(top) >= 0) {
+          candidate = i;
+          break;
+        }
       }
+
+      candidate ??= columns.indexWhere((column) => column.isNotEmpty);
+      if (candidate < 0) return;
+
+      final cost = await chooseHintCost(context, coins);
+      if (!mounted || cost == null || finished) return;
+      final prefs = await SharedPreferences.getInstance();
+      final balance = prefs.getInt('coins') ?? 200;
+      if (balance < cost) return;
+      final newCoins = balance - cost;
+      if (cost > 0) await prefs.setInt('coins', newCoins);
+      if (!mounted) return;
+
+      setState(() {
+        coins = newCoins;
+        hintColumn = candidate;
+      });
+    } finally {
+      _hintBusy = false;
     }
-
-    candidate ??= columns.indexWhere((column) => column.isNotEmpty);
-    if (candidate < 0) return;
-
-    final prefs = await SharedPreferences.getInstance();
-    final newCoins = coins - cost;
-    await prefs.setInt('coins', newCoins);
-    if (!mounted) return;
-
-    setState(() {
-      coins = newCoins;
-      hintColumn = candidate;
-    });
   }
 
   Future<void> _addSeat() async {
@@ -458,7 +460,7 @@ class _ColorCrewScreenState extends State<ColorCrewScreen> {
     showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(26),
         ),
@@ -493,8 +495,7 @@ class _ColorCrewScreenState extends State<ColorCrewScreen> {
         actions: [
           FilledButton(
             onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pop(true);
+              continueAfterCompletion(dialogContext);
             },
             child: const Text('CONTINUE'),
           ),
@@ -626,8 +627,7 @@ class _ColorCrewScreenState extends State<ColorCrewScreen> {
                               children: columns[columnIndex]
                                   .map(
                                     (color) => Padding(
-                                      padding:
-                                          const EdgeInsets.only(top: 5),
+                                      padding: const EdgeInsets.only(top: 5),
                                       child: Container(
                                         height: 44,
                                         decoration: BoxDecoration(
